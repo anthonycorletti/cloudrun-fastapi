@@ -4,6 +4,8 @@ Boilerplate for running [FastAPI](https://fastapi.tiangolo.com/) on [Google Clou
 
 Future Features:
 
+- More documentation
+- Testing with Pytest
 - PostgreSQL connection and migrations with Alembic
 - Secrets Management with Google Cloud Secrets Manager
 - Oauth & JWT Authentication and Authorization

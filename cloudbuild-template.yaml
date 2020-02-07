@@ -1,0 +1,25 @@
+steps:
+  - id: "docker_build"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "us.gcr.io/$PROJECT_ID/api", "."]
+
+  - id: "docker_push"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "us.gcr.io/$PROJECT_ID/api"]
+
+  - id: "cloud_run_deploy"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    args:
+      [
+        "gcloud",
+        "run",
+        "deploy",
+        "fastapi-$BRANCH_NAME",
+        "--image=us.gcr.io/$PROJECT_ID/fastapi:latest",
+        "--port=8080",
+        "--platform=managed",
+        "--region=us-central1",
+        "--allow-unauthenticated",
+        "--revision-suffix=$SHORT_SHA",
+        "--set-env-vars=PROJECT_ID=$PROJECT_ID,SHORT_SHA=$SHORT_SHA",
+      ]

@@ -2,6 +2,10 @@
 
 Boilerplate for running [FastAPI](https://fastapi.tiangolo.com/) on [Google Cloud Run](https://cloud.google.com/run) with [Google Cloud Build](https://cloud.google.com/cloud-build) for deployment.
 
+
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run)
+
+
 Future Features:
 
 - More documentation

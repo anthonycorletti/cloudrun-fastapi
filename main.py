@@ -2,9 +2,9 @@ import os
 
 from fastapi import FastAPI
 
-import config
+from config import get_logger
 
-logger = config.setup_logger()
+logger = get_logger()
 
 title_detail = os.getenv('PROJECT_ID', 'Local')
 version = os.getenv('SHORT_SHA', 'local')

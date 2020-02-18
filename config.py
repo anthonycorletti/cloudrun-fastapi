@@ -2,7 +2,7 @@ import logging
 import time
 
 
-def setup_logger():
+def get_logger():
     tz = time.strftime('%z')
     logging.config = logging.basicConfig(
         format=(f'[%(asctime)s.%(msecs)03d {tz}] '

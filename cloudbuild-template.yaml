@@ -1,11 +1,11 @@
 steps:
   - id: "docker_build"
     name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "us.gcr.io/$PROJECT_ID/api", "."]
+    args: ["build", "-t", "us.gcr.io/$PROJECT_ID/cloudrun-fastapi", "."]
 
   - id: "docker_push"
     name: "gcr.io/cloud-builders/docker"
-    args: ["push", "us.gcr.io/$PROJECT_ID/api"]
+    args: ["push", "us.gcr.io/$PROJECT_ID/cloudrun-fastapi"]
 
   - id: "cloud_run_deploy"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
@@ -14,7 +14,7 @@ steps:
         "gcloud",
         "run",
         "deploy",
-        "fastapi-$BRANCH_NAME",
+        "cloudrun-fastapi-$BRANCH_NAME",
         "--image=us.gcr.io/$PROJECT_ID/fastapi:latest",
         "--port=8080",
         "--platform=managed",

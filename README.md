@@ -2,15 +2,7 @@
 
 Boilerplate for running [FastAPI](https://fastapi.tiangolo.com/) on [Google Cloud Run](https://cloud.google.com/run) with [Google Cloud Build](https://cloud.google.com/cloud-build) for deployment.
 
-Future Features:
-
-- More documentation
-- Testing with Pytest
-- PostgreSQL connection and migrations with Alembic
-- Secrets Management with Google Cloud Secrets Manager
-- Oauth & JWT Authentication and Authorization
-- Google Cloud PubSub Integration
-- Google Cloud Scheduler Integration
+For all documentation visit the [docs](./docs) folder.
 
 ### Contributions & Suggestions
 

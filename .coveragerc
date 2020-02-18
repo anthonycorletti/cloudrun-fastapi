@@ -1,3 +1,3 @@
 [run]
 omit =
-  tests/*
+    # nothing to omit right now

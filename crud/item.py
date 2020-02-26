@@ -1,6 +1,5 @@
 import uuid
 
-from fastapi import HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
@@ -30,7 +29,7 @@ def update_item(db: Session, item_id: UUID4, item_update: ItemUpdate):
     item = get_item(db, item_id)
 
     if not item:
-        raise HTTPException(status_code=400, detail=f'Item not found.')
+        return item
 
     for col, val in dict(item_update).items():
         setattr(item, col, val)

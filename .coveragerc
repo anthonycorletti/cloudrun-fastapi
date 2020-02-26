@@ -1,3 +1,5 @@
 [run]
 omit =
-    # nothing to omit right now
+    tests/*
+    alembic/*
+    *__init__.py

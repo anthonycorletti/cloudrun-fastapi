@@ -35,7 +35,7 @@ def create_item(db: Session = Depends(get_db),
 def get_item(id: UUID4, db: Session = Depends(get_db)):
     item = item_crud.get_item(db, id)
     if not item:
-        raise HTTPException(status_code=404, detail="Item not found.")
+        raise HTTPException(status_code=400, detail="Item not found.")
     return item
 
 
@@ -43,7 +43,7 @@ def get_item(id: UUID4, db: Session = Depends(get_db)):
 def get_items(db: Session = Depends(get_db)):
     items = item_crud.get_items(db)
     if not items:
-        raise HTTPException(status_code=404, detail="Items not found.")
+        raise HTTPException(status_code=400, detail="Items not found.")
     return items
 
 
@@ -58,5 +58,5 @@ def update_item(id: UUID4,
                     })):
     updated_item = item_crud.update_item(db, id, new_item)
     if not updated_item:
-        raise HTTPException(status_code=404, detail="Item not found.")
+        raise HTTPException(status_code=400, detail="Item not found.")
     return updated_item

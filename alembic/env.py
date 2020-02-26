@@ -1,6 +1,7 @@
 import os
 import re
-from logging.config import fileConfig
+import time
+from logging import basicConfig
 
 from alembic import context
 from sqlalchemy import create_engine
@@ -11,6 +12,7 @@ from models.item import Item
 
 # configure local env setup
 os.environ['TZ'] = 'UTC'
+tz = time.strftime('%z')
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -18,7 +20,11 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)
+basicConfig(format=(f'[%(asctime)s.%(msecs)03d {tz}] '
+                    '[%(process)s] [%(filename)s L%(lineno)d] '
+                    '[%(levelname)s] %(message)s'),
+            level='INFO',
+            datefmt='%Y-%m-%d %H:%M:%S')
 
 # add your model's MetaData object here
 # for 'autogenerate' support

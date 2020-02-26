@@ -1,9 +1,5 @@
 # cloudrun-fastapi Docs
 
-## Contents
-
-- [Usage](#Usage)
-
 Future Features:
 
 - Testing with Pytest
@@ -15,8 +11,6 @@ Future Features:
 - Google Cloud PubSub Integration
 - Google Cloud Scheduler Integration
 
-## Usage
-
 #### Local Development
 
 ```sh
@@ -26,6 +20,12 @@ uvicorn main:api --reload
 # running with gunicorn, recommended for production
 gunicorn main:api -c gunicorn_config.py
 ```
+
+#### Secrets manager
+
+It's suggested that you reauth with the following to use secrets manager locally `gcloud auth application-default login`.
+
+Remotely, you will have to configure Cloud Run and Cloud Build service accounts to have Secret Manager Secret Accessor permissions. In this example we are using the default Compute (GCE) service account for Cloud Run services.
 
 #### Testing Locally
 
@@ -71,3 +71,11 @@ docker build -t us.gcr.io/$PROJECT_ID/cloud_run_fastapi .
 docker run -p 8000:8000 -it us.gcr.io/$PROJECT_ID/cloud_run_fastapi:latest
 docker push us.gcr.io/$PROJECT_ID/cloud_run_fastapi
 ```
+
+#### CloudBuild, Deployment, running a live Cloud Run service
+
+To deploy this API to Cloud Run, you will need to have the following
+
+- enable GCP's GitHub Integration for your repo
+- have a PostgreSQL instance created in GCP that you will use for the service
+- two cloud build triggers that refer the right cloudsql db instance name

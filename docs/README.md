@@ -1,11 +1,14 @@
 # cloudrun-fastapi Docs
 
+- [Local Development](#Local-Development)
+- [Secrets Manager](#Secrets-Manager)
+- [Testing Locally](#Testing-Locally)
+- [Working with Postgres](#Working-with-Postgres)
+- [Docker and Google Container Registry](#Docker-and-Google-Container-Registry)
+- [Cloud Build, Deployment, running a live Cloud Run service](#CloudBuild,-Deployment,-running-a-live-Cloud-Run-service)
+
 Future Features:
 
-- Testing with Pytest
-- PostgreSQL connection and migrations with Alembic
-- Secrets Management with Google Cloud Secrets Manager
-- Deployment with CloudBuild, Triggers, and GitHub
 - DNS Setup with Managed Domain Mappings
 - Oauth & JWT Authentication and Authorization
 - Google Cloud PubSub Integration
@@ -15,17 +18,17 @@ Future Features:
 
 ```sh
 pip3 install -r requirements.txt
-# running with uvicorn, not recommended in production, better for development
+# running with uvicorn, recommended for development
 uvicorn main:api --reload
 # running with gunicorn, recommended for production
 gunicorn main:api -c gunicorn_config.py
 ```
 
-#### Secrets manager
+#### Secrets Manager
 
-It's suggested that you reauth with the following to use secrets manager locally `gcloud auth application-default login`.
+When working across multiple projects and accounts in GCP, it's suggested that you reauth with the following command `gcloud auth application-default login` when working with GCP Secrets Manager locally.
 
-Remotely, you will have to configure Cloud Run and Cloud Build service accounts to have Secret Manager Secret Accessor permissions. In this example we are using the default Compute (GCE) service account for Cloud Run services.
+Remotely, you will have to configure the Cloud Run and Cloud Build service accounts to have Secret Manager Secret Accessor permissions. In this example we are using the default Compute (GCE) service account for Cloud Run services.
 
 #### Testing Locally
 
@@ -58,13 +61,15 @@ cloud_sql_proxy -instances=PROJECT_ID:REGION:INSTANCE_NAME -dir=/tmp/cloudsql
 # then run the commands as listed above
 ```
 
-If you want to directly connect to the remote database, while the proxy is running on one process;
+If you want to directly connect to the remote database, while the proxy is running in one session, run the following command in another shell session:
 
 ```sh
 psql "sslmode=disable host=/tmp/cloudsql/PROJECT_ID:REGION:INSTANCE_NAME user=postgres dbname=postgres"
 ```
 
 #### Docker and Google Container Registry
+
+This is handled by Cloud Build, but incase you'd like to do this without Cloud Build:
 
 ```sh
 docker build -t us.gcr.io/$PROJECT_ID/cloud_run_fastapi .
@@ -76,6 +81,5 @@ docker push us.gcr.io/$PROJECT_ID/cloud_run_fastapi
 
 To deploy this API to Cloud Run, you will need to have the following
 
-- enable GCP's GitHub Integration for your repo
-- have a PostgreSQL instance created in GCP that you will use for the service
-- two cloud build triggers that refer the right cloudsql db instance name
+- [Create GitHub app triggers](https://cloud.google.com/cloud-build/docs/automating-builds/create-github-app-triggers) which will trigger the build process as noted in `cloudbuild.yaml`.
+- Have a PostgreSQL instance created in GCP that you will use for the service. There is no demo instance created as there is no free tier for Cloud SQL PSQL 😔. This instance will have to be referenced in the Cloud Run deployment in the `--set-cloudsql-instances` argument which is not specified in the `cloudbuild.yaml` template. For setting a service account for the Cloud Run service, add a `--service-account` parameter in the cloud run deploy command in `loudbuild.yaml`

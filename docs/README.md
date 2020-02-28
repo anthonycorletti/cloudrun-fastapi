@@ -1,11 +1,11 @@
 # cloudrun-fastapi Docs
 
-- [Local Development](#Local-Development)
-- [Secrets Manager](#Secrets-Manager)
-- [Testing Locally](#Testing-Locally)
-- [Working with Postgres](#Working-with-Postgres)
-- [Docker and Google Container Registry](#Docker-and-Google-Container-Registry)
-- [Cloud Build, Deployment, running a live Cloud Run service](#CloudBuild,-Deployment,-running-a-live-Cloud-Run-service)
+- [Local Development](#local-development)
+- [Secrets Manager](#secrets-manager)
+- [Testing Locally](#testing-locally)
+- [Working with Postgres](#working-with-postgres)
+- [Docker and Google Container Registry](#docker-and-google-container-registry)
+- [Cloud Build, Deployment, running a live Cloud Run service](#cloudbuild-deployment-running-a-live-cloud-run-service)
 
 Future Features:
 

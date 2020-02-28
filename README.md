@@ -1,4 +1,4 @@
-# cloudrun-fastapi
+# cloudrun-fastapi [![Awesome](https://awesome.re/badge.svg)](https://github.com/steren/awesome-cloudrun/blob/master/README.md#popular-stacks)
 
 Boilerplate for running [FastAPI](https://fastapi.tiangolo.com/) on [Google Cloud Run](https://cloud.google.com/run) with [Google Cloud Build](https://cloud.google.com/cloud-build) for deployment.
 

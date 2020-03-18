@@ -57,5 +57,7 @@ steps:
         "--region=us-central1",
         "--allow-unauthenticated",
         "--revision-suffix=$SHORT_SHA",
+        "--service-account=service-account@developer.gserviceaccount.com",
         "--set-env-vars=PROJECT_ID=$PROJECT_ID,SHORT_SHA=$SHORT_SHA",
+        "--set-cloudsql-instances=$PROJECT_ID:us-central1:db-instance-name",
       ]

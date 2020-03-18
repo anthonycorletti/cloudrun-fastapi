@@ -82,4 +82,5 @@ docker push us.gcr.io/$PROJECT_ID/cloud_run_fastapi
 To deploy this API to Cloud Run, you will need to have the following
 
 - [Create GitHub app triggers](https://cloud.google.com/cloud-build/docs/automating-builds/create-github-app-triggers) which will trigger the build process as noted in `cloudbuild.yaml`.
-- Have a PostgreSQL instance created in GCP that you will use for the service. There is no demo instance created as there is no free tier for Cloud SQL PSQL 😔. This instance will have to be referenced in the Cloud Run deployment in the `--set-cloudsql-instances` argument which is not specified in the `cloudbuild.yaml` template. For setting a service account for the Cloud Run service, add a `--service-account` parameter in the cloud run deploy command in `cloudbuild.yaml`
+- Have a PostgreSQL instance created in GCP that you will use for the service. There is no demo instance created as there is no free tier for Cloud SQL PSQL 😔. This instance will have to be referenced in the Cloud Run deployment in the `--set-cloudsql-instances` argument which is specified with a sample value in the `cloudbuild.yaml` template.
+- Additionally, replace the service account value with the appropriate service account address for the `--service-account` parameter in the cloud run deploy command in `cloudbuild.yaml`

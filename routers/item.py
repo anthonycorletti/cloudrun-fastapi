@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
-from crud import item as item_crud
+from actions import item as item_actions
 from database import SessionLocal
 from schemas.item import Item, ItemCreate, ItemUpdate
 
@@ -27,13 +27,13 @@ def create_item(db: Session = Depends(get_db),
                         'name': 'Item name',
                         'description': 'Item description'
                     })):
-    new_item = item_crud.create_item(db, item)
+    new_item = item_actions.create_item(db, item)
     return new_item
 
 
 @router.get('/items/{id}', response_model=Item, tags=['item'])
 def get_item(id: UUID4, db: Session = Depends(get_db)):
-    item = item_crud.get_item(db, id)
+    item = item_actions.get_item(db, id)
     if not item:
         raise HTTPException(status_code=400, detail="Item not found.")
     return item
@@ -41,7 +41,7 @@ def get_item(id: UUID4, db: Session = Depends(get_db)):
 
 @router.get('/items', response_model=List[Item], tags=['item'])
 def get_items(db: Session = Depends(get_db)):
-    items = item_crud.get_items(db)
+    items = item_actions.get_items(db)
     if not items:
         raise HTTPException(status_code=400, detail="Items not found.")
     return items
@@ -56,7 +56,7 @@ def update_item(id: UUID4,
                         'name': 'Updated item name',
                         'description': 'Updated item description'
                     })):
-    updated_item = item_crud.update_item(db, id, new_item)
+    updated_item = item_actions.update_item(db, id, new_item)
     if not updated_item:
         raise HTTPException(status_code=400, detail="Item not found.")
     return updated_item

@@ -3,3 +3,4 @@ omit =
     tests/*
     alembic/*
     *__init__.py
+    config.py

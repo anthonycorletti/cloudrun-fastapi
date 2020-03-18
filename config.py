@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import time
 
 from google.cloud import secretmanager_v1beta1 as secretmanager
@@ -43,13 +44,13 @@ class SecretsConfig(BaseModel):
 # if running in a project, cloud run or cloud build
 if project_id:
     secrets = build_secrets_config(project_id)
-    if os.getenv('TESTING') == 'True':
+    if 'pytest' in ''.join(sys.argv):
         # use the container in cloudbuild
         secrets.DATABASE_URL = 'postgresql+psycopg2://postgres@postgres:5432/postgres_test_db'
 # if running locally
 else:
     secrets = SecretsConfig()
     secrets.DATABASE_URL = 'postgresql+psycopg2://postgres:localhost@/postgres'
-    if os.getenv('TESTING') == 'True':
+    if 'pytest' in ''.join(sys.argv):
         # use localhost in local env
         secrets.DATABASE_URL = 'postgresql+psycopg2://postgres@localhost:5432/postgres_test_db'

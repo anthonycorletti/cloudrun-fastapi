@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Body, Depends, HTTPException
@@ -8,7 +9,7 @@ from actions import auth as auth_actions
 from actions import item as item_actions
 from config import oauth2_scheme
 from database import get_db
-from schemas.item import Item, ItemCreate, ItemUpdate
+from schemas.item import Item, ItemCreate, ItemDelete, ItemUpdate
 
 router = APIRouter()
 
@@ -58,8 +59,7 @@ def update_item(id: UUID4,
                         'description': 'Updated item description'
                     })):
     current_user = auth_actions.get_current_user(db, token)
-    if current_user.id != id:
-        raise HTTPException(status_code=401)
+    new_item.user_id = current_user.id
     updated_item = item_actions.update_item(db, id, new_item)
     if not updated_item:
         raise HTTPException(status_code=400, detail="Item not found.")
@@ -69,11 +69,12 @@ def update_item(id: UUID4,
 @router.delete('/items/{id}', response_model=Item, tags=['item'])
 def delete_item(id: UUID4,
                 db: Session = Depends(get_db),
-                token: str = Depends(oauth2_scheme)):
+                token: str = Depends(oauth2_scheme),
+                item_delete: ItemDelete = Body(
+                    ..., example={'deleted_at': datetime.now()})):
     current_user = auth_actions.get_current_user(db, token)
-    if current_user.id != id:
-        raise HTTPException(status_code=401)
-    deleted_item = item_actions.delete_item(db, id)
+    item_delete.user_id = current_user.id
+    deleted_item = item_actions.delete_item(db, id, item_delete)
     if not deleted_item:
         raise HTTPException(status_code=400, detail="Item not found.")
     return deleted_item

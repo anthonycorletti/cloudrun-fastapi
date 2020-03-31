@@ -1,11 +1,12 @@
 import uuid
 from datetime import datetime
 
+from fastapi import HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from models.item import Item
-from schemas.item import ItemCreate, ItemUpdate
+from schemas.item import ItemCreate, ItemDelete, ItemUpdate
 
 
 def get_item(db: Session, item_id: UUID4):
@@ -35,6 +36,9 @@ def update_item(db: Session, item_id: UUID4, item_update: ItemUpdate):
     if not item:
         return item
 
+    if item.user_id != item_update.user_id:
+        raise HTTPException(status_code=401, detail='Cannot update this item.')
+
     for col, val in dict(item_update).items():
         setattr(item, col, val)
 
@@ -42,13 +46,17 @@ def update_item(db: Session, item_id: UUID4, item_update: ItemUpdate):
     return get_item(db, item_id)
 
 
-def delete_item(db: Session, item_id: UUID4):
+def delete_item(db: Session, item_id: UUID4, item_delete: ItemDelete):
     item = get_item(db, item_id)
 
     if not item:
         return item
 
-    setattr(item, 'deleted_at', datetime.now())
+    if item.user_id != item_delete.user_id:
+        raise HTTPException(status_code=401, detail='Cannot delete this item.')
+
+    for col, val in dict(item_delete).items():
+        setattr(item, col, val)
 
     db.commit()
     return item

@@ -18,6 +18,11 @@ class ItemUpdate(ItemBase):
     pass
 
 
+class ItemDelete(BaseModel):
+    deleted_at: datetime
+    user_id: Optional[UUID4]
+
+
 class Item(ItemBase):
     id: UUID4
     user_id: UUID4

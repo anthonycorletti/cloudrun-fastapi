@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from fastapi import HTTPException
 from pydantic import UUID4
@@ -12,11 +13,13 @@ logger = get_logger()
 
 
 def get_user(db: Session, user_id: UUID4):
-    return db.query(User).filter(User.id == user_id).first()
+    return db.query(User).filter(User.id == user_id,
+                                 User.deleted_at.is_(None)).first()
 
 
 def get_user_by_email(db: Session, user_email: str):
-    return db.query(User).filter(User.email == user_email).first()
+    return db.query(User).filter(User.email == user_email,
+                                 User.deleted_at.is_(None)).first()
 
 
 def create_user(db: Session, user: UserCreate):
@@ -49,3 +52,15 @@ def update_user(db: Session, user_id: UUID4, user_update: UserUpdate):
 
     db.commit()
     return get_user(db, user_id)
+
+
+def delete_user(db: Session, user_id: UUID4):
+    user = get_user(db, user_id)
+
+    if not user:
+        return user
+
+    setattr(user, 'deleted_at', datetime.now())
+
+    db.commit()
+    return user

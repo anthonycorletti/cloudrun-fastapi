@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from database import Base
 
@@ -24,3 +25,5 @@ class User(Base):
                         onupdate=datetime.now,
                         nullable=False)
     deleted_at = Column(DateTime, nullable=True)
+
+    items = relationship('Item', back_populates='user', lazy='subquery')

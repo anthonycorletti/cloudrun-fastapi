@@ -54,7 +54,7 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
-    deleted_at: Optional[datetime]
+    pass
 
 
 class User(UserBase):

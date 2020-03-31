@@ -7,6 +7,7 @@ from pydantic import UUID4, BaseModel
 class ItemBase(BaseModel):
     name: str
     description: Optional[str]
+    user_id: Optional[UUID4]
 
 
 class ItemCreate(ItemBase):
@@ -19,6 +20,7 @@ class ItemUpdate(ItemBase):
 
 class Item(ItemBase):
     id: UUID4
+    user_id: UUID4
     name: str
     description: str
     created_at: datetime

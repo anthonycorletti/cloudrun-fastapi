@@ -1,9 +1,11 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, String
+from sqlalchemy import Column, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from database import Base
+from models.user import User  # NOQA
 
 
 class Item(Base):
@@ -21,3 +23,9 @@ class Item(Base):
                         onupdate=datetime.now,
                         nullable=False)
     deleted_at = Column(DateTime, nullable=True)
+
+    user_id = Column(UUID(as_uuid=True),
+                     ForeignKey("users.id"),
+                     nullable=False)
+
+    user = relationship('User', back_populates='items', lazy='subquery')

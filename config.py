@@ -3,6 +3,7 @@ import os
 import sys
 import time
 
+from fastapi.security import OAuth2PasswordBearer
 from google.cloud import secretmanager_v1beta1 as secretmanager
 from google.cloud import storage
 
@@ -11,6 +12,7 @@ from schemas.secrets_config import SecretsConfig
 project_id = os.getenv('PROJECT_ID')
 gcs_client = storage.Client()
 secrets_client = secretmanager.SecretManagerServiceClient()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 
 def get_logger():

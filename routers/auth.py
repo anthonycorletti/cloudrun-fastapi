@@ -1,12 +1,13 @@
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette import status
 
 from actions.auth import (authenticate_user, create_access_token,
                           get_current_user)
+from config import oauth2_scheme
 from database import get_db
 from schemas.auth import Token
 from schemas.user import User
@@ -14,7 +15,6 @@ from schemas.user import User
 TOKEN_EXPIRE_MINUTES = 43200
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 
 @router.post("/token", response_model=Token, tags=['auth'])

@@ -2,11 +2,9 @@ import os
 
 from fastapi import FastAPI
 
-from config import get_logger
 from routers import auth, default, item, user
 
-logger = get_logger()
-
+os.environ['TZ'] = 'UTC'
 title_detail = os.getenv('PROJECT_ID', 'Local')
 version = os.getenv('SHORT_SHA', 'local')
 

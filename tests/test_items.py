@@ -1,7 +1,5 @@
 import uuid
 
-import pytest
-
 from config import get_logger
 from tests.factories.item import test_item, updated_test_item
 

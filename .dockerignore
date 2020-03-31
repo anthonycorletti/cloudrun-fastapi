@@ -161,4 +161,5 @@ $RECYCLE.BIN/
 shippable
 .git
 
-/tmp
+tmp/
+tests/

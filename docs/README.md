@@ -33,7 +33,7 @@ Remotely, you will have to configure the Cloud Run and Cloud Build service accou
 #### Testing Locally
 
 ```sh
-TESTING=True PYTHONPATH=. pytest tests -s --cov=. --cov-report html:./htmlcov --cov-fail-under 100 --log-cli-level DEBUG
+pytest tests -s --cov=. --cov-report html:./htmlcov --cov-fail-under 100 --log-cli-level DEBUG
 # view coverage output
 open htmlcov/index.html
 ```

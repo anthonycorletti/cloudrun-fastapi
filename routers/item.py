@@ -5,18 +5,10 @@ from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from actions import item as item_actions
-from database import SessionLocal
+from database import get_db
 from schemas.item import Item, ItemCreate, ItemUpdate
 
 router = APIRouter()
-
-
-def get_db():
-    try:
-        db = SessionLocal()
-        yield db
-    finally:
-        db.close()
 
 
 @router.post("/items", response_model=Item, tags=['item'])

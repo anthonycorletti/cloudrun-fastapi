@@ -27,7 +27,7 @@ steps:
       - "-c"
       - |
         pip3 install -r requirements.txt \
-        && TESTING=True PYTHONPATH=. pytest tests -s --cov=. --cov-fail-under 100 --log-cli-level info
+        && pytest tests -s --cov=. --cov-fail-under 100 --log-cli-level info
     env:
       - "PROJECT_ID=$PROJECT_ID"
 
@@ -50,14 +50,19 @@ steps:
         "gcloud",
         "run",
         "deploy",
-        "cloudrunfastapi-$BRANCH_NAME",
-        "--image=us.gcr.io/$PROJECT_ID/cloudrunfastapi:latest",
+        "api-$BRANCH_NAME",
+        "--image=us.gcr.io/$PROJECT_ID/api:latest",
+        "--cpu=2",
         "--port=8080",
+        "--memory=2048",
+        "--timeout=600",
+        "--concurrency=80",
         "--platform=managed",
+        "--max-instances=1000",
         "--region=us-central1",
         "--allow-unauthenticated",
         "--revision-suffix=$SHORT_SHA",
-        "--service-account=service-account@developer.gserviceaccount.com",
         "--set-env-vars=PROJECT_ID=$PROJECT_ID,SHORT_SHA=$SHORT_SHA",
-        "--set-cloudsql-instances=$PROJECT_ID:us-central1:db-instance-name",
+        "--set-cloudsql-instances=$PROJECT_ID:us-central1:cloudrunfastapi",
+        "--service-account=cloudrunsrvacct@$PROJECT_ID.iam.gserviceaccount.com"
       ]

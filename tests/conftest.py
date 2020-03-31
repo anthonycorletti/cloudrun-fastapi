@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 from alembic import command
 from alembic.config import Config
@@ -14,9 +16,10 @@ from main import api
 # informing us that 'TESTING' had already been read from the environment.
 # This must also be set at runtime in order to inform our middleware of testing
 environ['TESTING'] = 'True'
+logging.getLogger('alembic').setLevel(logging.ERROR)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def create_test_database():
     """
     Create a clean database on every test case.
@@ -25,16 +28,16 @@ def create_test_database():
     We use the `sqlalchemy_utils` package here for a few helpers in consistently
     creating and dropping the database.
     """
-    url = apisecrets.DATABASE_URL
-    engine = create_engine(url)
+    dburl = apisecrets.DATABASE_URL
+    create_engine(dburl)
     assert not database_exists(
-        url), 'Test database already exists. Aborting tests.'
-    create_database(url)
+        dburl), 'Test database already exists. Aborting tests.'
+    create_database(dburl)
     alembic_config = Config("alembic.ini")
     command.upgrade(alembic_config, "head")
-    command.history(alembic_config, indicate_current=True)
+    # command.history(alembic_config, indicate_current=True)
     yield
-    drop_database(url)
+    drop_database(dburl)
 
 
 @pytest.fixture()

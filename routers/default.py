@@ -6,8 +6,8 @@ logger = get_logger()
 router = APIRouter()
 
 
-@router.get('/health', tags=['default'])
-def health():
+@router.get('/healthcheck', tags=['default'])
+def healthcheck():
     message = 'alive and kicking'
-    logger.info(message)
+    logger.debug(message)
     return {'message': message}

@@ -15,7 +15,9 @@ class User(Base):
                 nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
+    password = Column(String, nullable=False)
     bio = Column(String, nullable=True)
+
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     updated_at = Column(DateTime,
                         default=datetime.now,

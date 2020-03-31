@@ -9,17 +9,12 @@ from tests.factories.user import (test_user_alice, test_user_alice_update,
 logger = get_logger()
 
 
-def test_no_users(client):
-    response = client.get(f"/users")
-    assert response.status_code == 400
-
-
 def test_no_user(client):
     response = client.get(f"/users/{str(uuid.uuid4())}")
-    assert response.status_code == 400
+    assert response.status_code == 404
 
 
-def test_user_create(client):
+def test_user_create_get(client):
     response = client.post("/users", json=test_user_bob)
     response_data = response.json()
     assert response.status_code == 200
@@ -29,20 +24,32 @@ def test_user_create(client):
     assert response_data.get('updated_at')
     assert not response_data.get('deleted_at')
 
-
-def test_users_get(client):
-    response = client.get(f"/users")
-    response_data = response.json()
-    assert response.status_code == 200
-    assert len(response_data) == 1
-
-    first_user_id = response_data[0].get('id')
+    first_user_id = response_data.get('id')
     response = client.get(f"/users/{first_user_id}")
     assert response.status_code == 200
 
-    response_data = response.json()
-    assert response_data.get('id') == first_user_id
+    assert response.status_code == 200
+    assert response_data.get('id')
     assert response_data.get('name') == 'Bob Smith'
+    assert response_data.get('created_at')
+    assert response_data.get('updated_at')
+    assert not response_data.get('deleted_at')
+
+
+def test_user_create_invalid_pass(client):
+    data = copy.copy(test_user_bob)
+    data['email'] = 'test@example.com'
+    for badpass in ['noupper', 'NOLOWER', 'nospecial', 'short', '']:
+        data['password'] = badpass
+        response = client.post("/users", json=data)
+        assert response.status_code == 422
+
+
+def test_user_create_fail_preexisting_email(client):
+    response = client.post("/users", json=test_user_bob)
+    assert response.status_code == 400
+    assert response.json().get(
+        'detail') == 'An account already exists with this email.'
 
 
 def test_user_update(client):
@@ -52,7 +59,6 @@ def test_user_update(client):
 
     user_id = response_data.get('id')
     response = client.put(f"/users/{user_id}", json=test_user_alice_update)
-    print(response.json())
     assert response.status_code == 200
 
     response_data = response.json()
@@ -63,7 +69,7 @@ def test_user_update(client):
 
 def test_user_update_missing(client):
     response = client.put(f"/users/{str(uuid.uuid4())}", json=test_user_bob)
-    assert response.status_code == 400
+    assert response.status_code == 404
 
 
 def test_bio_over_char_limit(client):

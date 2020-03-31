@@ -39,16 +39,19 @@ def build_secrets_config(project_id: str) -> SecretsConfig:
 
 # if running in a project, cloud run or cloud build
 if project_id:
-    secrets = build_secrets_config(project_id)
+    apisecrets = build_secrets_config(project_id)
     if 'pytest' in ''.join(sys.argv):
         # use the container in cloudbuild
         url = 'postgresql+psycopg2://postgres@postgres:5432/postgres_test_db'
-        secrets.DATABASE_URL = url
+        apisecrets.DATABASE_URL = url
 # if running locally
 else:
-    secrets = build_secrets_config(project_id)
-    secrets.DATABASE_URL = 'postgresql+psycopg2://postgres:localhost@/postgres'
+    apisecrets = build_secrets_config(project_id)
+    secret_key = 'thesecretsauce'
+    url = 'postgresql+psycopg2://postgres:localhost@/postgres'
+    apisecrets.DATABASE_URL = url
+    apisecrets.SECRET_KEY = secret_key
     if 'pytest' in ''.join(sys.argv):
         # use localhost in local env
         url = 'postgresql+psycopg2://postgres@localhost:5432/postgres_test_db'
-        secrets.DATABASE_URL = url
+        apisecrets.DATABASE_URL = url

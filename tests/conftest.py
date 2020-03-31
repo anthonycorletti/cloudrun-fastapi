@@ -8,7 +8,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 from starlette.config import environ
 from starlette.testclient import TestClient
 
-from config import secrets as apisecrets
+from config import apisecrets
 from main import api
 
 # This sets `os.environ`, but provides some additional protection.
@@ -25,8 +25,8 @@ def create_test_database():
     Create a clean database on every test case.
     For safety, we should abort if a database already exists.
 
-    We use the `sqlalchemy_utils` package here for a few helpers in consistently
-    creating and dropping the database.
+    We use the `sqlalchemy_utils` package here for a few helpers in
+    consistently creating and dropping the database.
     """
     dburl = apisecrets.DATABASE_URL
     create_engine(dburl)

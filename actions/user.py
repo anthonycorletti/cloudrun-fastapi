@@ -1,23 +1,37 @@
 import uuid
 
+from fastapi import HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
+from config import get_logger
 from models.user import User
 from schemas.user import UserCreate, UserUpdate
+
+logger = get_logger()
 
 
 def get_user(db: Session, user_id: UUID4):
     return db.query(User).filter(User.id == user_id).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(User).offset(skip).limit(limit).all()
+def get_user_by_email(db: Session, user_email: str):
+    return db.query(User).filter(User.email == user_email).first()
 
 
 def create_user(db: Session, user: UserCreate):
     id = str(uuid.uuid4())
-    db_user = User(id=id, email=user.email, name=user.name, bio=user.bio)
+
+    if get_user_by_email(db, user.email):
+        raise HTTPException(
+            status_code=400,
+            detail='An account already exists with this email.')
+
+    db_user = User(id=id,
+                   email=user.email,
+                   name=user.name,
+                   bio=user.bio,
+                   password=user.password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

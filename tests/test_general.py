@@ -10,7 +10,7 @@ def test_placeholder():
 
 
 def test_healthcheck(client):
-    response = client.get('/health')
+    response = client.get('/healthcheck')
     assert response.status_code == 200
     response_json = response.json()
     assert response_json.get('message') == 'alive and kicking'

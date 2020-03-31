@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import MetaData
 
-from config import secrets as apisecrets
+from config import apisecrets
 
 NAMING_CONVENTION = {
     "ix": "ix_%(column_0_label)s",

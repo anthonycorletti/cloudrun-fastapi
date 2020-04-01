@@ -7,7 +7,7 @@ from starlette import status
 
 from actions.auth import (authenticate_user, create_access_token,
                           get_current_user)
-from config import apisecrets, oauth2_scheme
+from config import oauth2_scheme
 from database import get_db
 from schemas.auth import Token
 from schemas.user import User

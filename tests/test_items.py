@@ -22,7 +22,7 @@ def headers(client):
         'username': test_user_bob.get('email'),
         'password': test_user_bob.get('password')
     }
-    response = client.post("/token", data=oauth_form)
+    response = client.post("/login", data=oauth_form)
     assert response.status_code == 200
     assert response.json().get('token_type') == 'bearer'
     access_token = response.json().get('access_token')
@@ -39,7 +39,7 @@ def create_other_user_item(client):
         'username': test_user_alice.get('email'),
         'password': test_user_alice.get('password')
     }
-    response = client.post("/token", data=oauth_form)
+    response = client.post("/login", data=oauth_form)
     assert response.status_code == 200
     access_token = response.json().get('access_token')
     headers = {'Authorization': f'Bearer {access_token}'}

@@ -9,7 +9,7 @@ from google.cloud import storage
 
 from schemas.secrets_config import SecretsConfig
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 project_id = os.getenv('PROJECT_ID')
 if project_id:
     gcs_client = storage.Client()
@@ -50,10 +50,10 @@ if project_id:
 # if running locally
 else:
     apisecrets = build_secrets_config(project_id)
-    secret_key = 'thesecretsauce'
     url = 'postgresql+psycopg2://postgres:localhost@/postgres'
     apisecrets.DATABASE_URL = url
-    apisecrets.SECRET_KEY = secret_key
+    apisecrets.SECRET_KEY = 'thesecretsauce'
+    apisecrets.DOMAIN = '127.0.0.1'
     if 'pytest' in ''.join(sys.argv):
         # use localhost in local env
         url = 'postgresql+psycopg2://postgres@localhost:5432/postgres_test_db'

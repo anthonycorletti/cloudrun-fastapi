@@ -7,7 +7,7 @@ from starlette import status
 
 from actions.auth import (authenticate_user, create_access_token,
                           get_current_user)
-from config import oauth2_scheme
+from config import apisecrets, oauth2_scheme
 from database import get_db
 from schemas.auth import Token
 from schemas.user import User
@@ -17,7 +17,7 @@ TOKEN_EXPIRE_MINUTES = 43200
 router = APIRouter()
 
 
-@router.post("/token", response_model=Token, tags=['auth'])
+@router.post("/login", response_model=Token, tags=['auth'])
 def login_for_access_token(db: Session = Depends(get_db),
                            form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(db, form_data.username, form_data.password)
@@ -31,6 +31,19 @@ def login_for_access_token(db: Session = Depends(get_db),
     access_token = create_access_token(data={"sub": user.email},
                                        expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/logout", response_model=Token, tags=['auth'])
+def logout(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    '''
+    return an invalid token, assuming login and logout
+    workflows are handled in a client
+    '''
+    current_user = get_current_user(db, token)
+    access_token_expires = timedelta(minutes=-1)
+    expired_token = create_access_token(data={"sub": current_user.email},
+                                        expires_delta=access_token_expires)
+    return {"access_token": expired_token, "token_type": "bearer"}
 
 
 @router.get("/current_user", response_model=User, tags=['auth'])

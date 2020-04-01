@@ -3,14 +3,13 @@ from typing import Union
 
 import jwt
 from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from starlette import status
 
 from actions.user import get_user_by_email
-from config import apisecrets, get_logger
+from config import apisecrets, get_logger, oauth2_scheme
 from models.user import User
 from schemas.auth import TokenData
 
@@ -18,7 +17,6 @@ logger = get_logger()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = apisecrets.SECRET_KEY
 ACCESS_TOKEN_ALGORITHM = 'HS256'
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 
 def valid_password(plain_password: str, hashed_password: str) -> bool:

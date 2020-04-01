@@ -53,7 +53,6 @@ else:
     url = 'postgresql+psycopg2://postgres:localhost@/postgres'
     apisecrets.DATABASE_URL = url
     apisecrets.SECRET_KEY = 'thesecretsauce'
-    apisecrets.DOMAIN = '127.0.0.1'
     if 'pytest' in ''.join(sys.argv):
         # use localhost in local env
         url = 'postgresql+psycopg2://postgres@localhost:5432/postgres_test_db'

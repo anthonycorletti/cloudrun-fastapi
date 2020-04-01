@@ -10,7 +10,6 @@
 Future Features:
 
 - DNS Setup with Managed Domain Mappings
-- Oauth & JWT Authentication and Authorization
 - Google Cloud PubSub Integration
 - Google Cloud Scheduler Integration
 

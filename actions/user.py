@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 
 from fastapi import HTTPException
 from pydantic import UUID4
@@ -7,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from config import get_logger
 from models.user import User
-from schemas.user import UserCreate, UserUpdate
+from schemas.user import UserCreate, UserDelete, UserUpdate
 
 logger = get_logger()
 
@@ -44,9 +43,6 @@ def create_user(db: Session, user: UserCreate):
 def update_user(db: Session, user_id: UUID4, user_update: UserUpdate):
     user = get_user(db, user_id)
 
-    if not user:
-        return user
-
     for col, val in dict(user_update).items():
         setattr(user, col, val)
 
@@ -54,13 +50,11 @@ def update_user(db: Session, user_id: UUID4, user_update: UserUpdate):
     return get_user(db, user_id)
 
 
-def delete_user(db: Session, user_id: UUID4):
+def delete_user(db: Session, user_id: UUID4, user_delete: UserDelete):
     user = get_user(db, user_id)
 
-    if not user:
-        return user
-
-    setattr(user, 'deleted_at', datetime.now())
+    for col, val in dict(user_delete).items():
+        setattr(user, col, val)
 
     db.commit()
     return user

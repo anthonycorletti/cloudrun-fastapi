@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
@@ -6,7 +8,7 @@ from actions import auth as auth_actions
 from actions import user as user_actions
 from config import get_logger, oauth2_scheme
 from database import get_db
-from schemas.user import User, UserCreate, UserUpdate
+from schemas.user import User, UserCreate, UserDelete, UserUpdate
 
 router = APIRouter()
 
@@ -51,19 +53,17 @@ def update_user(id: UUID4,
     if current_user.id != id:
         raise HTTPException(status_code=401)
     updated_user = user_actions.update_user(db, id, new_user)
-    if not updated_user:
-        raise HTTPException(status_code=404, detail="User not found.")
     return updated_user
 
 
 @router.delete('/users/{id}', tags=['user'])
 def delete_user(id: UUID4,
                 db: Session = Depends(get_db),
-                token: str = Depends(oauth2_scheme)):
+                token: str = Depends(oauth2_scheme),
+                user_delete: UserDelete = Body(
+                    ..., example={'deleted_at': str(datetime.now())})):
     current_user = auth_actions.get_current_user(db, token)
     if current_user.id != id:
         raise HTTPException(status_code=401)
-    deleted_user = user_actions.delete_user(db, id)
-    if not deleted_user:
-        raise HTTPException(status_code=404, detail="User not found.")
+    deleted_user = user_actions.delete_user(db, id, user_delete)
     return deleted_user

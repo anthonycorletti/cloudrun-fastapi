@@ -57,6 +57,11 @@ class UserUpdate(UserBase):
     pass
 
 
+class UserDelete(BaseModel):
+    deleted_at: datetime
+    user_id: Optional[UUID4]
+
+
 class User(UserBase):
     id: UUID4
     email: EmailStr

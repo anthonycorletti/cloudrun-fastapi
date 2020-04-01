@@ -1,9 +1,11 @@
 import copy
 import uuid
+from datetime import datetime
 
 from config import get_logger
 from schemas.user import BIO_CHAR_LIMIT
-from tests.factories.user import test_user_bob, test_user_bob_update
+from tests.factories.user import (test_user_alice, test_user_bob,
+                                  test_user_bob_update)
 
 logger = get_logger()
 
@@ -95,3 +97,46 @@ def test_bio_over_char_limit(client):
     test_over_limit['bio'] = 'a' * (BIO_CHAR_LIMIT + 1)
     response = client.post("/users", json=test_over_limit)
     assert response.status_code == 422
+
+
+def test_user_delete(client):
+    response = client.post("/users", json=test_user_alice)
+    assert response.status_code == 200
+
+    user_id = response.json().get('id')
+    oauth_form = {
+        'username': test_user_alice.get('email'),
+        'password': test_user_alice.get('password')
+    }
+    response = client.post("/token", data=oauth_form)
+    assert response.status_code == 200
+    assert response.json().get('token_type') == 'bearer'
+    access_token = response.json().get('access_token')
+    headers = {'Authorization': f'Bearer {access_token}'}
+
+    response = client.delete(f'/users/{user_id}',
+                             json={'deleted_at': str(datetime.now())},
+                             headers=headers)
+    assert response.status_code == 200
+
+
+def test_user_delete_wrong_user(client):
+    test_user_alice['email'] = 'alice2@example.com'
+    response = client.post("/users", json=test_user_alice)
+    assert response.status_code == 200
+
+    user_id = response.json().get('id')
+    oauth_form = {
+        'username': test_user_bob.get('email'),
+        'password': test_user_bob.get('password')
+    }
+    response = client.post("/token", data=oauth_form)
+    assert response.status_code == 200
+    assert response.json().get('token_type') == 'bearer'
+    access_token = response.json().get('access_token')
+    headers = {'Authorization': f'Bearer {access_token}'}
+
+    response = client.delete(f'/users/{user_id}',
+                             json={'deleted_at': str(datetime.now())},
+                             headers=headers)
+    assert response.status_code == 401

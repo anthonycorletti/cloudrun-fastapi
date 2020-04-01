@@ -9,10 +9,11 @@ from google.cloud import storage
 
 from schemas.secrets_config import SecretsConfig
 
-project_id = os.getenv('PROJECT_ID')
-gcs_client = storage.Client()
-secrets_client = secretmanager.SecretManagerServiceClient()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
+project_id = os.getenv('PROJECT_ID')
+if project_id:
+    gcs_client = storage.Client()
+    secrets_client = secretmanager.SecretManagerServiceClient()
 
 
 def get_logger():

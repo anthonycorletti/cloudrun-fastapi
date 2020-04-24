@@ -19,8 +19,11 @@ metadata = MetaData(naming_convention=NAMING_CONVENTION)
 SQLALCHEMY_DATABASE_URL = apisecrets.DATABASE_URL
 logger = logging.getLogger(__name__)
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_engine(SQLALCHEMY_DATABASE_URL,
+                       pool_pre_ping=True,
+                       pool_size=20)
+SessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=engine)
+Base = declarative_base(metadata=metadata)
 
 
 def get_db():
@@ -29,6 +32,3 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-Base = declarative_base(metadata=metadata)

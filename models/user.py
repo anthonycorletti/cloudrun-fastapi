@@ -14,6 +14,7 @@ class User(Base):
                 primary_key=True,
                 index=True,
                 nullable=False)
+
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
     password = Column(String, nullable=False)
@@ -24,6 +25,5 @@ class User(Base):
                         default=datetime.now,
                         onupdate=datetime.now,
                         nullable=False)
-    deleted_at = Column(DateTime, nullable=True)
 
     items = relationship('Item', back_populates='user', lazy='subquery')

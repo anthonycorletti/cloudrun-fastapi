@@ -16,16 +16,19 @@ if project_id:
     secrets_client = secretmanager.SecretManagerServiceClient()
 
 
-def get_logger():
+def get_logger(level: int = logging.INFO) -> logging.Logger:
     tz = time.strftime('%z')
     logging.config = logging.basicConfig(
         format=(f'[%(asctime)s.%(msecs)03d {tz}] '
                 '[%(process)s] [%(pathname)s L%(lineno)d] '
                 '[%(levelname)s] %(message)s'),
-        level='INFO',
+        level=level,
         datefmt='%Y-%m-%d %H:%M:%S')
     logger = logging.getLogger(__name__)
     return logger
+
+
+logger = get_logger()
 
 
 def build_secrets_config(project_id: str) -> SecretsConfig:
@@ -35,8 +38,9 @@ def build_secrets_config(project_id: str) -> SecretsConfig:
             version_path = secrets_client.secret_version_path(
                 project_id, secret_id, 'latest')
             secret_version = secrets_client.access_secret_version(version_path)
-            result.__setattr__(secret_id,
-                               secret_version.payload.data.decode('UTF-8'))
+            secret_data = secret_version.payload.data.decode('UTF-8')
+            setattr(result, secret_id, secret_data)
+
     return result
 
 
@@ -51,9 +55,8 @@ if project_id:
 else:
     apisecrets = build_secrets_config(project_id)
     url = 'postgresql+psycopg2://postgres:localhost@/postgres'
-    apisecrets.DATABASE_URL = url
-    apisecrets.SECRET_KEY = 'thesecretsauce'
     if 'pytest' in ''.join(sys.argv):
         # use localhost in local env
         url = 'postgresql+psycopg2://postgres@localhost:5432/postgres_test_db'
-        apisecrets.DATABASE_URL = url
+    apisecrets.DATABASE_URL = url
+    apisecrets.SECRET_KEY = 'thesecretsauce'

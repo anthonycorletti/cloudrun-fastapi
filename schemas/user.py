@@ -1,4 +1,3 @@
-import string
 from datetime import datetime
 from typing import Optional
 
@@ -10,7 +9,7 @@ BIO_CHAR_LIMIT = 160
 PASS_MIN_LENGTH = 8
 INVALID_PASS_MSG = (f'Password must be {PASS_MIN_LENGTH} characters or '
                     'more and have a mix of uppercase, lowercase, '
-                    'numbers, and special characters')
+                    'numbers, and special characters.')
 
 
 def valid_pass(password: str) -> bool:
@@ -26,8 +25,7 @@ def hash_password(password: str) -> str:
 
 
 def valid_bio_len(bio: str) -> bool:
-    return len(bio.translate(str.maketrans(
-        '', '', string.whitespace))) > BIO_CHAR_LIMIT
+    return len(bio) <= BIO_CHAR_LIMIT
 
 
 class UserBase(BaseModel):
@@ -37,8 +35,8 @@ class UserBase(BaseModel):
 
     @validator('bio')
     def bio_length(cls: BaseModel, v: str) -> str:
-        if v is not None and valid_bio_len(v):
-            raise ValueError(f'bio length must be less than {BIO_CHAR_LIMIT}')
+        if v is not None and not valid_bio_len(v):
+            raise ValueError(f'Bio is too long.')
         return v
 
 
@@ -55,11 +53,6 @@ class UserCreate(UserBase):
 
 class UserUpdate(UserBase):
     pass
-
-
-class UserDelete(BaseModel):
-    deleted_at: datetime
-    user_id: Optional[UUID4]
 
 
 class User(UserBase):

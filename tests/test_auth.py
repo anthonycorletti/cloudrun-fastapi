@@ -1,24 +1,19 @@
+import uuid
 from datetime import timedelta
 
 from fastapi.security import OAuth2PasswordBearer
 
 from actions.auth import create_access_token
-from config import get_logger
-from tests.factories.user import test_user_bob
+from tests.factories.user import mock_user_bob
+from tests.helpers import create_test_user
 
-logger = get_logger()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
-
-
-def create_test_user(client):
-    response = client.post("/users", json=test_user_bob)
-    return response.json().get('id')
 
 
 def test_oauth_token_bad_user(client):
     oauth_form = {
-        'username': test_user_bob.get('email'),
-        'password': test_user_bob.get('password')
+        'username': mock_user_bob.get('email'),
+        'password': mock_user_bob.get('password')
     }
     response = client.post("/login", data=oauth_form)
     assert response.status_code == 401
@@ -26,10 +21,10 @@ def test_oauth_token_bad_user(client):
 
 
 def test_oauth_token_current_user(client):
-    create_test_user(client)
+    create_test_user(client, mock_user_bob)
     oauth_form = {
-        'username': test_user_bob.get('email'),
-        'password': test_user_bob.get('password')
+        'username': mock_user_bob.get('email'),
+        'password': mock_user_bob.get('password')
     }
     response = client.post("/login", data=oauth_form)
     assert response.status_code == 200
@@ -44,8 +39,8 @@ def test_oauth_token_current_user(client):
 
 def test_oauth_token_invalid_pass(client):
     oauth_form = {
-        'username': test_user_bob.get('email'),
-        'password': test_user_bob.get('password') + 'invalid_pass'
+        'username': mock_user_bob.get('email'),
+        'password': mock_user_bob.get('password') + 'invalid_pass'
     }
     response = client.post("/login", data=oauth_form)
     assert response.status_code == 401
@@ -78,7 +73,10 @@ def test_get_current_user_expired_token(client):
 
 
 def test_get_current_user_missing_user(client):
-    token = create_access_token(data={'sub': 'missinguser@example.com'},
+    token = create_access_token(data={
+        'id': str(uuid.uuid4()),
+        'email': 'missinguser@example.com'
+    },
                                 expires_delta=timedelta(minutes=10))
     response = client.get(
         '/current_user',
@@ -88,8 +86,8 @@ def test_get_current_user_missing_user(client):
 
 def test_logout(client):
     oauth_form = {
-        'username': test_user_bob.get('email'),
-        'password': test_user_bob.get('password')
+        'username': mock_user_bob.get('email'),
+        'password': mock_user_bob.get('password')
     }
     response = client.post("/login", data=oauth_form)
     assert response.status_code == 200

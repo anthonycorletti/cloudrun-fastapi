@@ -15,17 +15,19 @@ class Item(Base):
                 primary_key=True,
                 index=True,
                 nullable=False)
+
+    user_id = Column(UUID(as_uuid=True),
+                     ForeignKey("users.id", ondelete='CASCADE'),
+                     nullable=False,
+                     index=True)
+
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
+
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     updated_at = Column(DateTime,
                         default=datetime.now,
                         onupdate=datetime.now,
                         nullable=False)
-    deleted_at = Column(DateTime, nullable=True)
-
-    user_id = Column(UUID(as_uuid=True),
-                     ForeignKey("users.id"),
-                     nullable=False)
 
     user = relationship('User', back_populates='items', lazy='subquery')

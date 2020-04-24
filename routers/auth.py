@@ -27,8 +27,9 @@ def login_for_access_token(db: Session = Depends(get_db),
             detail="Incorrect login credentials.",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    data = {'id': str(user.id), 'email': user.email}
     access_token_expires = timedelta(minutes=TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.email},
+    access_token = create_access_token(data=data,
                                        expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -41,7 +42,8 @@ def logout(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     '''
     current_user = get_current_user(db, token)
     access_token_expires = timedelta(minutes=-1)
-    expired_token = create_access_token(data={"sub": current_user.email},
+    data = {'id': str(current_user.id), 'email': current_user.email}
+    expired_token = create_access_token(data=data,
                                         expires_delta=access_token_expires)
     return {"access_token": expired_token, "token_type": "bearer"}
 

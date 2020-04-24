@@ -1,13 +1,12 @@
 from fastapi import APIRouter
 
-from config import get_logger
+from config import logger
 
-logger = get_logger()
 router = APIRouter()
 
 
 @router.get('/healthcheck', tags=['default'])
 def healthcheck():
-    message = 'alive and kicking'
-    logger.debug(message)
-    return {'message': message}
+    detail = 'alive and kicking'
+    logger.info(detail)
+    return {'detail': detail}

@@ -14,7 +14,6 @@ from main import api
 # This sets `os.environ`, but provides some additional protection.
 # If we placed it below the application import, it would raise an error
 # informing us that 'TESTING' had already been read from the environment.
-# This must also be set at runtime in order to inform our middleware of testing
 environ['TESTING'] = 'True'
 logging.getLogger('alembic').setLevel(logging.ERROR)
 

@@ -1,62 +1,63 @@
 import uuid
-from datetime import datetime
+from typing import List
 
-from fastapi import HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 
 from models.item import Item
-from schemas.item import ItemCreate, ItemDelete, ItemUpdate
+from schemas.item import ItemCreate, ItemUpdate
 
 
-def get_item(db: Session, item_id: UUID4):
-    return db.query(Item).filter(Item.id == item_id,
-                                 Item.deleted_at.is_(None)).first()
-
-
-def get_items(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Item).filter(
-        Item.deleted_at.is_(None)).offset(skip).limit(limit).all()
-
-
-def create_item(db: Session, item: ItemCreate):
-    db_item = Item(id=str(uuid.uuid4()),
-                   name=item.name,
-                   description=item.description,
-                   user_id=item.user_id)
-    db.add(db_item)
+def get_item(db: Session, item_id: UUID4) -> Item:
+    item = db.query(Item).filter(Item.id == item_id).first()
     db.commit()
-    db.refresh(db_item)
-    return db_item
+    return item
 
 
-def update_item(db: Session, item_id: UUID4, item_update: ItemUpdate):
-    item = get_item(db, item_id)
+def get_user_item(db: Session, user_id: UUID4, item_id: UUID4) -> Item:
+    item = db.query(Item).filter(Item.id == item_id,
+                                 Item.user_id == user_id).first()
+    db.commit()
+    return item
+
+
+def get_items(db: Session, skip: int, limit: int) -> List[Item]:
+    items = db.query(Item).offset(skip).limit(limit).all()
+    db.commit()
+    return items
+
+
+def create_item(db: Session, user_id: UUID4, item: ItemCreate) -> Item:
+    item = Item(id=str(uuid.uuid4()),
+                name=item.name,
+                description=item.description,
+                user_id=user_id)
+    db.add(item)
+    db.commit()
+    return item
+
+
+def update_item(db: Session, user_id: UUID4, item_id: UUID4,
+                item_update: ItemUpdate) -> Item:
+    item = get_user_item(db, user_id, item_id)
 
     if not item:
         return item
-
-    if item.user_id != item_update.user_id:
-        raise HTTPException(status_code=401, detail='Cannot update this item.')
 
     for col, val in dict(item_update).items():
         setattr(item, col, val)
 
     db.commit()
-    return get_item(db, item_id)
+    return item
 
 
-def delete_item(db: Session, item_id: UUID4, item_delete: ItemDelete):
-    item = get_item(db, item_id)
+def delete_item(db: Session, user_id: UUID4, item_id: UUID4) -> Item:
+    item = get_user_item(db, user_id, item_id)
 
     if not item:
         return item
 
-    if item.user_id != item_delete.user_id:
-        raise HTTPException(status_code=401, detail='Cannot delete this item.')
-
-    for col, val in dict(item_delete).items():
-        setattr(item, col, val)
+    db.query(Item).filter(Item.id == item_id).delete()
 
     db.commit()
     return item

@@ -2,7 +2,7 @@
 import os
 
 bind = f":{os.environ.get('PORT', '8080')}"
-workers = 1
 threads = 2
-timeout = 30
+workers = 5
+timeout = 60
 worker_class = 'uvicorn.workers.UvicornWorker'

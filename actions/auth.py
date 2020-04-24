@@ -5,10 +5,11 @@ import jwt
 from fastapi import Depends, HTTPException
 from jwt import PyJWTError
 from passlib.context import CryptContext
+from pydantic import UUID4
 from sqlalchemy.orm import Session
 from starlette import status
 
-from actions.user import get_user_by_email
+from actions.user import get_user, get_user_by_email
 from config import apisecrets, get_logger, oauth2_scheme
 from models.user import User
 from schemas.auth import TokenData
@@ -23,7 +24,7 @@ def valid_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def authenticate_user(db: Session, user_email: str,
+def authenticate_user(db: Session, user_email: UUID4,
                       password: str) -> Union[bool, User]:
     user = get_user_by_email(db, user_email)
     if not user:
@@ -53,13 +54,13 @@ def get_current_user(db: Session, token: str = Depends(oauth2_scheme)):
         payload = jwt.decode(token,
                              SECRET_KEY,
                              algorithms=[ACCESS_TOKEN_ALGORITHM])
-        email = payload.get("sub")
+        id, email = payload.get("id"), payload.get("email")
         if email is None or email == '':
             raise credentials_exception
-        token_data = TokenData(email=email)
+        token_data = TokenData(id=id, email=email)
     except PyJWTError:
         raise credentials_exception
-    user = get_user_by_email(db, token_data.email)
+    user = get_user(db, token_data.id)
     if user is None:
         raise credentials_exception
     return user

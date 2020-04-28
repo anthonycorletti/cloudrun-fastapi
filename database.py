@@ -30,5 +30,11 @@ def get_db():
     try:
         db = SessionLocal()
         yield db
+        db.commit()
+    except Exception as e:
+        logger.error(('Exception raised, rolling back changes. '
+                      f'Exception: {e}'))
+        db.rollback()
+        raise e
     finally:
         db.close()

@@ -54,9 +54,9 @@ steps:
         "--image=us.gcr.io/$PROJECT_ID/api:latest",
         "--cpu=2",
         "--port=8080",
-        "--memory=2048",
+        "--memory=2048Mi",
         "--timeout=600",
-        "--concurrency=80",
+        "--concurrency=20",
         "--platform=managed",
         "--max-instances=1000",
         "--region=us-central1",
@@ -66,3 +66,15 @@ steps:
         "--set-cloudsql-instances=$PROJECT_ID:us-central1:cloudrunfastapi",
         "--service-account=cloudrunsrvacct@$PROJECT_ID.iam.gserviceaccount.com"
       ]
+
+  - id: "create domain name mapping"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    args:
+        - sh
+        - -c
+        - |
+            gcloud beta run domain-mappings create \
+              --domain $_MY_DOMAIN \
+              --service api-master \
+              --platform managed \
+              --region us-central1 || true

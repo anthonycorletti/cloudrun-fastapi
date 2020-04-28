@@ -6,12 +6,14 @@
 - [Working with Postgres](#working-with-postgres)
 - [Docker and Google Container Registry](#docker-and-google-container-registry)
 - [Cloud Build, Deployment, running a live Cloud Run service](#cloudbuild-deployment-running-a-live-cloud-run-service)
+- [DNS Setup with Managed Domain Mappings](#dns-setup-with-managed-domain-mappings)
 
-Future Features:
-
-- DNS Setup with Managed Domain Mappings
-- Google Cloud PubSub Integration
-- Google Cloud Scheduler Integration
+Todo Items:
+- [Working with Context Managers](working-with-context-managers)
+- [Google Cloud Pub Sub Integration](google-cloud-pub-sub-integration)
+- [Google Cloud Scheduler Integration](google-cloud-scheduler-Integration)
+- [Emails with SendGrid](emails-with-sendgrid)
+- [Login With Google](login-with-google)
 
 #### Local Development
 
@@ -83,3 +85,24 @@ To deploy this API to Cloud Run, you will need to have the following
 - [Create GitHub app triggers](https://cloud.google.com/cloud-build/docs/automating-builds/create-github-app-triggers) which will trigger the build process as noted in `cloudbuild.yaml`.
 - Have a PostgreSQL instance created in GCP that you will use for the service. There is no demo instance created as there is no free tier for Cloud SQL PSQL 😔. This instance will have to be referenced in the Cloud Run deployment in the `--set-cloudsql-instances` argument which is specified with a sample value in the `cloudbuild.yaml` template.
 - Additionally, replace the service account value with the appropriate service account address for the `--service-account` parameter in the cloud run deploy command in `cloudbuild.yaml`
+
+
+#### DNS Setup with Managed Domain Mappings
+
+In `cloudbuild.yaml` there is a step called `"create domain name mapping"` which shows how to create a domain name mapping for a cloud run service.
+You will have to place a substitution variable in the cloud build trigger for your api (`_MY_DOMAIN` as mentioned in `cloudbuild.yaml`).
+
+
+#### Google Cloud Pub Sub Integration
+_TODO_
+
+#### Google Cloud Scheduler Integration
+_TODO_
+
+#### Emails with SendGrid
+_TODO_
+
+
+#### Login With Google
+<!-- https://medium.com/data-rebels/fastapi-google-as-an-external-authentication-provider-3a527672cf33 -->
+_TODO_

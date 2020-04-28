@@ -2,7 +2,7 @@ import os
 
 from fastapi import FastAPI
 
-from routers import auth, default, item, user
+from routers import auth, default, item, pubsub, user
 
 os.environ['TZ'] = 'UTC'
 title_detail = os.getenv('PROJECT_ID', 'Local')
@@ -14,3 +14,4 @@ api.include_router(default.router)
 api.include_router(auth.router)
 api.include_router(user.router)
 api.include_router(item.router)
+api.include_router(pubsub.router)

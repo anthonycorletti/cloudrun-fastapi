@@ -1,4 +1,7 @@
+import pytest
+
 import gunicorn_config
+from database import db_session
 
 
 def test_healthcheck(client):
@@ -10,3 +13,10 @@ def test_healthcheck(client):
 
 def test_gunicorn_config_worker_class():
     assert gunicorn_config.worker_class == 'uvicorn.workers.UvicornWorker'
+
+
+def test_db_session_rollback_on_error(client):
+    with pytest.raises(Exception):
+        with db_session() as db:
+            db.execute("select 1;")
+            raise

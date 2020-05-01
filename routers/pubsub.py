@@ -1,19 +1,18 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter
 from starlette.requests import Request
 
-from database import get_db
+from config import logger
 
 router = APIRouter()
 
 
 @router.get('/pubsub/publisher', tags=['pubsub'])
-def publish(db: Session = Depends(get_db)):
-    pass
+def publish():
+    return
 
 
 @router.post('/pubsub/subscriber', tags=['pubsub'])
-async def subscribe(request: Request, db: Session = Depends(get_db)):
-    print(dict(request))
-    print(dict(request).keys())
+def subscribe(request: Request):
+    logger.debug(dict(request))
+    logger.debug(dict(request).keys())
     return

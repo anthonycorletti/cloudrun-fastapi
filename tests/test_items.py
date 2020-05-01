@@ -73,6 +73,15 @@ def test_item_update(client):
     assert response_data.get('id') == item_id
     assert response_data.get('name') == 'Updated item name'
 
+    response = client.get(f"/items/{item_id}",
+                          json=updated_mock_item,
+                          headers=headers(client, mock_user_bob))
+    assert response.status_code == 200
+
+    response_data = response.json()
+    assert response_data.get('id') == item_id
+    assert response_data.get('name') == 'Updated item name'
+
     response = client.get(f"/items", headers=headers(client, mock_user_bob))
     response_data = response.json()
     assert response.status_code == 200

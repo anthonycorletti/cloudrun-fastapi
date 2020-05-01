@@ -2,42 +2,41 @@ from typing import List
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import UUID4
-from sqlalchemy.orm import Session
 
 from actions import auth as auth_actions
 from actions import user as user_actions
 from config import oauth2_scheme
-from database import get_db
 from schemas.user import User, UserCreate, UserUpdate
 
 router = APIRouter()
 
 
 @router.post("/users", response_model=User, tags=['user'])
-def create_user(db: Session = Depends(get_db),
-                user_create: UserCreate = Body(
-                    ...,
-                    example={
-                        'name': 'Bob',
-                        'email': 'bob@example.com',
-                        'password': 'Thes3cret_'
-                    })):
+def create_user(user_create: UserCreate = Body(
+    ...,
+    example={
+        'name': 'Bob',
+        'email': 'bob@example.com',
+        'password': 'Thes3cret_'
+    },
+)):
     """
     create a new user
     """
-    new_user = user_actions.create_user(db, user_create)
+    if user_actions.get_user_by_email(user_create.email):
+        raise HTTPException(status_code=422,
+                            detail="This email is taken. Try another.")
+    new_user = user_actions.create_user(user_create)
     return new_user
 
 
 @router.get('/users/{id}', response_model=User, tags=['user'])
-def get_user(id: UUID4,
-             db: Session = Depends(get_db),
-             token: str = Depends(oauth2_scheme)):
+def get_user(id: UUID4, token: str = Depends(oauth2_scheme)):
     """
     get any user
     """
-    auth_actions.get_current_user(db, token)
-    user = user_actions.get_user(db, id)
+    auth_actions.get_current_user(token)
+    user = user_actions.get_user(id)
     if not user:
         raise HTTPException(status_code=400, detail="User not found.")
     return user
@@ -46,19 +45,17 @@ def get_user(id: UUID4,
 @router.get('/users', response_model=List[User], tags=['user'])
 def get_users(skip: int = 0,
               limit: int = 100,
-              db: Session = Depends(get_db),
               token: str = Depends(oauth2_scheme)):
     """
     get many users
     """
-    auth_actions.get_current_user(db, token)
-    users = user_actions.get_users(db, skip, limit)
+    auth_actions.get_current_user(token)
+    users = user_actions.get_users(skip, limit)
     return users
 
 
 @router.put('/users', response_model=User, tags=['user'])
-def update_user(db: Session = Depends(get_db),
-                token: str = Depends(oauth2_scheme),
+def update_user(token: str = Depends(oauth2_scheme),
                 user_update: UserUpdate = Body(
                     ...,
                     example={
@@ -69,17 +66,22 @@ def update_user(db: Session = Depends(get_db),
     """
     update the current user
     """
-    current_user = auth_actions.get_current_user(db, token)
-    updated_user = user_actions.update_user(db, current_user.id, user_update)
+    current_user = auth_actions.get_current_user(token)
+
+    if current_user.email != user_update.email:
+        if user_actions.get_user_by_email(user_update.email):
+            raise HTTPException(status_code=422,
+                                detail="This email is taken. Try another.")
+
+    updated_user = user_actions.update_user(current_user.id, user_update)
     return updated_user
 
 
 @router.delete('/users', tags=['user'])
-def delete_user(db: Session = Depends(get_db),
-                token: str = Depends(oauth2_scheme)):
+def delete_user(token: str = Depends(oauth2_scheme)):
     """
     delete the current user
     """
-    current_user = auth_actions.get_current_user(db, token)
-    deleted_user = user_actions.delete_user(db, current_user.id)
+    current_user = auth_actions.get_current_user(token)
+    deleted_user = user_actions.delete_user(current_user.id)
     return deleted_user

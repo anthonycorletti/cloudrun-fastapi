@@ -6,7 +6,6 @@ from fastapi import Depends, HTTPException
 from jwt import PyJWTError
 from passlib.context import CryptContext
 from pydantic import UUID4
-from sqlalchemy.orm import Session
 from starlette import status
 
 from actions.user import get_user, get_user_by_email
@@ -18,15 +17,17 @@ logger = get_logger()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = apisecrets.SECRET_KEY
 ACCESS_TOKEN_ALGORITHM = 'HS256'
+credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                      detail="Invalid credentials.",
+                                      headers={"WWW-Authenticate": "Bearer"})
 
 
 def valid_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def authenticate_user(db: Session, user_email: UUID4,
-                      password: str) -> Union[bool, User]:
-    user = get_user_by_email(db, user_email)
+def authenticate_user(user_email: UUID4, password: str) -> Union[bool, User]:
+    user = get_user_by_email(user_email)
     if not user:
         return False
     if not valid_password(password, user.password):
@@ -44,12 +45,7 @@ def create_access_token(data: dict, expires_delta: timedelta):
     return encoded_jwt
 
 
-def get_current_user(db: Session, token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid credentials.",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token,
                              SECRET_KEY,
@@ -60,7 +56,7 @@ def get_current_user(db: Session, token: str = Depends(oauth2_scheme)):
         token_data = TokenData(id=id, email=email)
     except PyJWTError:
         raise credentials_exception
-    user = get_user(db, token_data.id)
+    user = get_user(token_data.id)
     if user is None:
         raise credentials_exception
     return user

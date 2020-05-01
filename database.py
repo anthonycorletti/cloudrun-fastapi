@@ -1,11 +1,11 @@
-import logging
+from contextlib import contextmanager
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import MetaData
 
-from config import apisecrets
+from config import apisecrets, logger
 
 NAMING_CONVENTION = {
     "ix": "ix_%(column_0_label)s",
@@ -17,24 +17,38 @@ NAMING_CONVENTION = {
 metadata = MetaData(naming_convention=NAMING_CONVENTION)
 
 SQLALCHEMY_DATABASE_URL = apisecrets.DATABASE_URL
-logger = logging.getLogger(__name__)
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL,
                        pool_pre_ping=True,
-                       pool_size=20)
-SessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=engine)
-Base = declarative_base(metadata=metadata)
+                       pool_size=20,
+                       max_overflow=0)
+SessionLocal = sessionmaker(autocommit=False,
+                            expire_on_commit=False,
+                            autoflush=True,
+                            bind=engine)
+Base = declarative_base()
 
 
-def get_db():
+@contextmanager
+def db_session():
     try:
+        logger.debug('getting session local ... ')
         db = SessionLocal()
+        logger.debug('yielding to session ... ')
         yield db
+        logger.debug('committing session ... ')
         db.commit()
+        logger.debug('committed session ... ')
     except Exception as e:
+        logger.debug('exception raised ... ')
         logger.error(('Exception raised, rolling back changes. '
                       f'Exception: {e}'))
+        logger.debug('rolling back ... ')
         db.rollback()
+        logger.debug('rolled back ... ')
+        logger.debug('raising exception ... ')
         raise e
     finally:
+        logger.debug('closing ... ')
         db.close()
+        logger.debug('closed ... ')

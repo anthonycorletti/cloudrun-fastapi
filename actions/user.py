@@ -40,8 +40,7 @@ def update_user(user_id: UUID4, user_update: UserUpdate) -> User:
     return get_user(user_id)
 
 
-def delete_user(user_id: UUID4):
-    user = get_user(user_id)
+def delete_user(user: User) -> User:
     with db_session() as db:
-        db.query(User).filter(User.id == user_id).delete()
-        return user
+        db.query(User).filter(User.id == user.id).delete()
+    return user

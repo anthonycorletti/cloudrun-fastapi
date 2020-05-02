@@ -9,11 +9,12 @@
 - [DNS Setup with Managed Domain Mappings](#dns-setup-with-managed-domain-mappings)
 
 Todo Items:
-- [Working with Context Managers](working-with-context-managers)
 - [Google Cloud Pub Sub Integration](google-cloud-pub-sub-integration)
 - [Google Cloud Scheduler Integration](google-cloud-scheduler-Integration)
 - [Emails with SendGrid](emails-with-sendgrid)
 - [Login With Google](login-with-google)
+- [Terraform for building and managing GCP Infrastructure](terraform)
+<!-- https://medium.com/data-rebels/fastapi-google-as-an-external-authentication-provider-3a527672cf33 -->
 
 #### Local Development
 
@@ -91,18 +92,3 @@ To deploy this API to Cloud Run, you will need to have the following
 
 In `cloudbuild.yaml` there is a step called `"create domain name mapping"` which shows how to create a domain name mapping for a cloud run service.
 You will have to place a substitution variable in the cloud build trigger for your api (`_MY_DOMAIN` as mentioned in `cloudbuild.yaml`).
-
-
-#### Google Cloud Pub Sub Integration
-_TODO_
-
-#### Google Cloud Scheduler Integration
-_TODO_
-
-#### Emails with SendGrid
-_TODO_
-
-
-#### Login With Google
-<!-- https://medium.com/data-rebels/fastapi-google-as-an-external-authentication-provider-3a527672cf33 -->
-_TODO_

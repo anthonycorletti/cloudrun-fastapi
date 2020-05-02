@@ -26,8 +26,8 @@ def create_user(user_create: UserCreate = Body(
     if user_actions.get_user_by_email(user_create.email):
         raise HTTPException(status_code=422,
                             detail="This email is taken. Try another.")
-    new_user = user_actions.create_user(user_create)
-    return new_user
+    user = user_actions.create_user(user_create)
+    return user_actions.get_user(user.id)
 
 
 @router.get('/users/{id}', response_model=User, tags=['user'])
@@ -83,5 +83,5 @@ def delete_user(token: str = Depends(oauth2_scheme)):
     delete the current user
     """
     current_user = auth_actions.get_current_user(token)
-    deleted_user = user_actions.delete_user(current_user.id)
-    return deleted_user
+    user_actions.delete_user(current_user)
+    return current_user

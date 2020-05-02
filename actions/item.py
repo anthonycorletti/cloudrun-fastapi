@@ -41,7 +41,7 @@ def update_item(user_id: UUID4, id: UUID4, item_update: ItemUpdate) -> Item:
     return get_item(id)
 
 
-def delete_item(user_id: UUID4, item: Item) -> Item:
+def delete_item(item: Item) -> Item:
     with db_session() as db:
         db.query(Item).filter(Item.id == item.id).delete()
-        return item
+    return item

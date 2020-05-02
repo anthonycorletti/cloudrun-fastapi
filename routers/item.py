@@ -23,8 +23,8 @@ def create_item(token: str = Depends(oauth2_scheme),
     create an item for the current user
     """
     current_user = auth_actions.get_current_user(token)
-    new_item = item_actions.create_item(current_user.id, item_create)
-    return new_item
+    item = item_actions.create_item(current_user.id, item_create)
+    return item_actions.get_item(item.id)
 
 
 @router.get('/items/{id}', response_model=Item, tags=['item'])
@@ -69,8 +69,7 @@ def update_item(id: UUID4,
     item = item_actions.get_user_item(current_user.id, id)
     if not item:
         raise HTTPException(status_code=400, detail="Item not found.")
-    updated_item = item_actions.update_item(current_user.id, id, item_update)
-    return updated_item
+    return item_actions.update_item(current_user.id, id, item_update)
 
 
 @router.delete('/items/{id}', response_model=Item, tags=['item'])
@@ -82,5 +81,4 @@ def delete_item(id: UUID4, token: str = Depends(oauth2_scheme)):
     item = item_actions.get_user_item(current_user.id, id)
     if not item:
         raise HTTPException(status_code=400, detail="Item not found.")
-    deleted_item = item_actions.delete_item(current_user.id, item)
-    return deleted_item
+    return item_actions.delete_item(item)

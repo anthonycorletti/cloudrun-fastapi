@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from database import Base
-from models.user import User  # NOQA
+from models.user import User  # noqa
 
 
 class Item(Base):

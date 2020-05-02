@@ -8,8 +8,8 @@ from sqlalchemy import create_engine
 
 from config import apisecrets
 from database import Base
-from models.item import Item  # NOQA
-from models.user import User  # NOQA
+from models.item import Item  # noqa
+from models.user import User  # noqa
 
 # configure local env setup
 os.environ['TZ'] = 'UTC'

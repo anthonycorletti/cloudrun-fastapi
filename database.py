@@ -41,8 +41,7 @@ def db_session():
         logger.debug('committed session ... ')
     except Exception as e:
         logger.debug('exception raised ... ')
-        logger.error(('Exception raised, rolling back changes. '
-                      f'Exception: {e}'))
+        logger.exception(f'Exception raised, rolling back changes. {e}.')
         logger.debug('rolling back ... ')
         db.rollback()
         logger.debug('rolled back ... ')

@@ -4,16 +4,11 @@ import sys
 import time
 
 from fastapi.security import OAuth2PasswordBearer
+from google.cloud import pubsub_v1
 from google.cloud import secretmanager_v1beta1 as secretmanager
 from google.cloud import storage
 
 from schemas.secrets_config import SecretsConfig
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
-project_id = os.getenv('PROJECT_ID')
-if project_id:
-    gcs_client = storage.Client()
-    secrets_client = secretmanager.SecretManagerServiceClient()
 
 
 def get_logger(level: int = logging.INFO) -> logging.Logger:
@@ -28,10 +23,7 @@ def get_logger(level: int = logging.INFO) -> logging.Logger:
     return logger
 
 
-logger = get_logger()
-
-
-def build_secrets_config(project_id: str) -> SecretsConfig:
+def build_secrets_config(project_id: str = "") -> SecretsConfig:
     result = SecretsConfig()
     if project_id:
         for secret_id in result.dict().keys():
@@ -40,9 +32,15 @@ def build_secrets_config(project_id: str) -> SecretsConfig:
             secret_version = secrets_client.access_secret_version(version_path)
             secret_data = secret_version.payload.data.decode('UTF-8')
             setattr(result, secret_id, secret_data)
-
     return result
 
+
+logger = get_logger()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+project_id = os.getenv('PROJECT_ID')
+gcs_client = storage.Client()
+secrets_client = secretmanager.SecretManagerServiceClient()
+publisher = pubsub_v1.PublisherClient()
 
 # if running in a project, cloud run or cloud build
 if project_id:
@@ -53,7 +51,7 @@ if project_id:
         apisecrets.DATABASE_URL = url
 # if running locally
 else:
-    apisecrets = build_secrets_config(project_id)
+    apisecrets = build_secrets_config()
     url = 'postgresql+psycopg2://postgres:localhost@/postgres'
     if 'pytest' in ''.join(sys.argv):
         # use localhost in local env

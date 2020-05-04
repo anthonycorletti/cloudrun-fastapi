@@ -57,7 +57,6 @@ class UserUpdate(UserBase):
 
 class User(UserBase):
     id: UUID4
-    email: EmailStr
     created_at: datetime
     updated_at: datetime
 

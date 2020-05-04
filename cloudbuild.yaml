@@ -67,14 +67,40 @@ steps:
         "--service-account=cloudrunsrvacct@$PROJECT_ID.iam.gserviceaccount.com"
       ]
 
-  - id: "create domain name mapping"
+  - id: "create google cloud infrastrure"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     args:
         - sh
         - -c
         - |
+            echo "create domain name mapping ..."
+
             gcloud beta run domain-mappings create \
-              --domain $_MY_DOMAIN \
-              --service api-master \
-              --platform managed \
-              --region us-central1 || true
+                --domain $_MY_DOMAIN \
+                --service api-master \
+                --platform managed \
+                --region us-central1 || true
+
+            echo "create google cloud scheduler job ..."
+
+            gcloud scheduler jobs create http ping \
+                --schedule="* * * * *" \
+                --uri="https://$_MY_DOMAIN/healthcheck" \
+                --http-method=GET || true
+
+            echo "create iam binding for pubsub ..."
+
+            gcloud projects add-iam-policy-binding $PROJECT_ID \
+                --member="serviceAccount:$_SERVICE_ACCOUNT_ADDRESS"\
+                --role='roles/iam.serviceAccountTokenCreator'
+
+            echo "creating topics and subscriptions ..."
+
+            gcloud pubsub topics create apipub || true
+
+            gcloud pubsub subscriptions create apisub \
+                --topic apipub \
+                --topic-project $PROJECT_ID \
+                --push-endpoint https://$_MY_DOMAIN/pubsub/receive_message \
+                --push-auth-service-account $_SERVICE_ACCOUNT_ADDRESS \
+                --expiration-period=never || true

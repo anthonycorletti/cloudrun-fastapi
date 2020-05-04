@@ -1,4 +1,9 @@
+import base64
+import json
+
 from starlette.testclient import TestClient
+
+from config import project_id
 
 
 def create_test_user(client: TestClient, user_data: dict) -> str:
@@ -29,3 +34,15 @@ def create_user_item(client: TestClient, user_data: dict,
                            headers=headers(client, user_data))
     assert response.status_code == 200
     return response.json().get('id')
+
+
+def mock_encoded_pubsub_message(data: dict, sub_name: str) -> bytes:
+    bytes = str(data).encode('utf8')
+    encoded_data = base64.b64encode(bytes).decode('utf8')
+    result = {
+        "message": {
+            "data": encoded_data,
+        },
+        "subscription": f"projects/{project_id}/subscriptions/{sub_name}"
+    }
+    return json.dumps(result).encode('utf8')

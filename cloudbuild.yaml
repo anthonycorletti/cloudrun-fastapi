@@ -67,7 +67,7 @@ steps:
         "--service-account=cloudrunsrvacct@$PROJECT_ID.iam.gserviceaccount.com"
       ]
 
-  - id: "create google cloud infrastrure"
+  - id: "create google cloud infrastructure"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     args:
         - sh

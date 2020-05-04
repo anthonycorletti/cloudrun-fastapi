@@ -11,8 +11,6 @@
 - [Google Cloud Pub Sub Integration](google-cloud-pub-sub-integration)
 
 Future Features:
-- Using terraform to build and manage GCP Infrastructure
-- Sending Emails with SendGrid
 - Login With Google & Other OAuth Proviers <!-- https://medium.com/data-rebels/fastapi-google-as-an-external-authentication-provider-3a527672cf33 -->
 
 #### Local Development
@@ -89,13 +87,14 @@ To deploy this API to Cloud Run, you will need to have the following
 
 #### DNS Setup with Managed Domain Mappings
 
-In `cloudbuild.yaml` there is a step called `"create domain name mapping"` which shows how to create a domain name mapping for a cloud run service.
+In `cloudbuild.yaml` there is a step called `"create google cloud infrastructure"` which shows how to create a domain name mapping for a cloud run service.
 You will have to place a substitution variable in the cloud build trigger for your api (`_MY_DOMAIN` as mentioned in `cloudbuild.yaml`).
 
 
 #### Google Cloud Scheduler Integration
 
-In `cloudbuild.yaml` there is a step called `"create google cloud scheduler job"` which deploys a google cloud scheduler job to make HTTP requests to an endpoint you provide.
-You will have to place a substitution variable for your api (`_MY_DOMAIN` as mentioned in `cloudbuild.yaml`).
+In `cloudbuild.yaml` there is a step called `"create google cloud infrastructure"` which deploys a google cloud scheduler job to make HTTP requests to an endpoint you provide. You will have to place a substitution variable in the cloud build trigger for your api (`_MY_DOMAIN` as mentioned in `cloudbuild.yaml`).
 
 #### Google Cloud Pub Sub Integration
+
+In `cloudbuild.yaml` there is a step called `"create google cloud infrastructure"` which deploys pubsub topic and subscription that are utilized by the `routers/pubsub.py` router. You will have to place a substitution variable in the cloud build trigger for your api (`_SERVICE_ACCOUNT_ADDRESS` as mentioned in `cloudbuild.yaml`). That service account should be able to create tokens and be authorized as a pubsub service account.

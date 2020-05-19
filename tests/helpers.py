@@ -37,11 +37,23 @@ def create_user_item(client: TestClient, user_data: dict,
 
 
 def mock_encoded_pubsub_message(data: dict, sub_name: str) -> bytes:
-    bytes = str(data).encode('utf8')
+    bytes = json.dumps(data).encode('utf8')
     encoded_data = base64.b64encode(bytes).decode('utf8')
     result = {
         "message": {
             "data": encoded_data,
+        },
+        "subscription": f"projects/{project_id}/subscriptions/{sub_name}"
+    }
+    return json.dumps(result).encode('utf8')
+
+
+def mock_encoded_pubsub_message_no_data(data: dict, sub_name: str) -> bytes:
+    bytes = json.dumps(data).encode('utf8')
+    encoded_data = base64.b64encode(bytes).decode('utf8')
+    result = {
+        "message": {
+            "notdata": encoded_data,
         },
         "subscription": f"projects/{project_id}/subscriptions/{sub_name}"
     }

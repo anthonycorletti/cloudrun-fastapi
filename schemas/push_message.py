@@ -4,5 +4,5 @@ from pydantic import BaseModel
 
 
 class PushMessage(BaseModel):
-    message: Dict[str, str]
+    message: Dict
     subscription: str

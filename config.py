@@ -25,36 +25,41 @@ def get_logger(level: int = logging.INFO) -> logging.Logger:
 
 def build_secrets_config(project_id: str = "") -> SecretsConfig:
     result = SecretsConfig()
-    if project_id:
-        for secret_id in result.dict().keys():
-            version_path = secrets_client.secret_version_path(
-                project_id, secret_id, 'latest')
-            secret_version = secrets_client.access_secret_version(version_path)
-            secret_data = secret_version.payload.data.decode('UTF-8')
-            setattr(result, secret_id, secret_data)
+    if not project_id:
+        return result
+    for secret_id in result.dict().keys():
+        version_path = secrets_client.secret_version_path(
+            project_id, secret_id, 'latest')
+        secret_version = secrets_client.access_secret_version(version_path)
+        secret_data = secret_version.payload.data.decode('UTF-8')
+        setattr(result, secret_id, secret_data)
     return result
 
 
 logger = get_logger()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 project_id = os.getenv('PROJECT_ID')
-gcs_client = storage.Client()
-secrets_client = secretmanager.SecretManagerServiceClient()
-publisher = pubsub_v1.PublisherClient()
 
 # if running in a project, cloud run or cloud build
 if project_id:
+    gcs_client = storage.Client(project=project_id)
+    secrets_client = secretmanager.SecretManagerServiceClient()
+    publisher = pubsub_v1.PublisherClient()
     apisecrets = build_secrets_config(project_id)
     if 'pytest' in ''.join(sys.argv):
         # use the container in cloudbuild
         url = 'postgresql+psycopg2://postgres@postgres:5432/postgres_test_db'
         apisecrets.DATABASE_URL = url
+
 # if running locally
 else:
+    GCLOUD_CONFIG_PROJECT_ID = os.popen(
+        'gcloud config get-value project').read().strip()
+    gcs_client = storage.Client(project=GCLOUD_CONFIG_PROJECT_ID)
+    secrets_client = secretmanager.SecretManagerServiceClient()
+    publisher = pubsub_v1.PublisherClient()
     apisecrets = build_secrets_config()
-    url = 'postgresql+psycopg2://postgres:localhost@/postgres'
     if 'pytest' in ''.join(sys.argv):
         # use localhost in local env
         url = 'postgresql+psycopg2://postgres@localhost:5432/postgres_test_db'
-    apisecrets.DATABASE_URL = url
-    apisecrets.SECRET_KEY = 'thesecretsauce'
+        apisecrets.DATABASE_URL = url

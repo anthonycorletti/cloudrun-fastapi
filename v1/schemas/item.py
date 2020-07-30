@@ -10,18 +10,16 @@ class ItemBase(BaseModel):
 
 
 class ItemCreate(ItemBase):
-    pass
+    user_id: Optional[UUID4]
 
 
 class ItemUpdate(ItemBase):
     pass
 
 
-class Item(ItemBase):
+class ItemORM(ItemBase):
     id: UUID4
     user_id: UUID4
-    name: str
-    description: str
     created_at: datetime
     updated_at: datetime
 

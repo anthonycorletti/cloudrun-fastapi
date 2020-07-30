@@ -1,5 +1,6 @@
 # cloudrun-fastapi Docs
 
+- [Code Architecture](#code-architecture)
 - [Local Development](#local-development)
 - [Secrets Manager](#secrets-manager)
 - [Testing Locally](#testing-locally)
@@ -12,6 +13,12 @@
 
 Future Features:
 - Login With Google & Other OAuth Proviers <!-- https://medium.com/data-rebels/fastapi-google-as-an-external-authentication-provider-3a527672cf33 -->
+
+#### Code Architecture
+
+```
+```
+
 
 #### Local Development
 

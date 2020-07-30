@@ -15,12 +15,9 @@ NAMING_CONVENTION = {
     "pk": "pk_%(table_name)s"
 }
 metadata = MetaData(naming_convention=NAMING_CONVENTION)
-
-SQLALCHEMY_DATABASE_URL = apisecrets.DATABASE_URL
-
-engine = create_engine(SQLALCHEMY_DATABASE_URL,
+engine = create_engine(apisecrets.DATABASE_URL,
                        pool_pre_ping=True,
-                       pool_size=20,
+                       pool_size=10,
                        max_overflow=0)
 SessionLocal = sessionmaker(autocommit=False,
                             expire_on_commit=False,
@@ -32,22 +29,13 @@ Base = declarative_base()
 @contextmanager
 def db_session():
     try:
-        logger.debug('getting session local ... ')
         db = SessionLocal()
-        logger.debug('yielding to session ... ')
         yield db
-        logger.debug('committing session ... ')
         db.commit()
-        logger.debug('committed session ... ')
     except Exception as e:
-        logger.debug('exception raised ... ')
-        logger.exception(f'Exception raised, rolling back changes. {e}.')
-        logger.debug('rolling back ... ')
+        logger.exception("Exception raised, rolling back changes. "
+                         f"Exception: {e}.")
         db.rollback()
-        logger.debug('rolled back ... ')
-        logger.debug('raising exception ... ')
         raise e
     finally:
-        logger.debug('closing ... ')
         db.close()
-        logger.debug('closed ... ')

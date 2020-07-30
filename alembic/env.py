@@ -1,5 +1,4 @@
 import os
-import re
 import time
 from logging import basicConfig
 
@@ -7,9 +6,7 @@ from alembic import context
 from sqlalchemy import create_engine
 
 from config import apisecrets
-from database import Base
-from models.item import Item  # noqa
-from models.user import User  # noqa
+from models import *  # noqa
 
 # configure local env setup
 os.environ['TZ'] = 'UTC'

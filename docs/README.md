@@ -16,7 +16,30 @@ Future Features:
 
 #### Code Architecture
 
-```
+```sh
+.
+├── alembic                 # alembic migrations and configs
+│   └── versions            # alembic migrations
+├── docs                    # all markdown documentation and sample scripting
+├── tests                   # tests and related general test configs
+│   └── v1                  # tests for v1 api
+└── v1                      # v1 api
+│   ├── daos                # data access objects for interfacing with datastores and 3rd party data sources
+│   ├── routers             # actual http route definitions that pass http data requests to services 
+│   ├── schemas             # data definitions for routers, services, and daos
+│   └── services            # middle layer that abstracts daos from routers
+├── Dockerfile
+├── LICENSE
+├── README.md
+├── alembic.ini
+├── cloudbuild.yaml
+├── config.py               # general api configurations
+├── database.py             # database connection specs
+├── gunicorn_config.py
+├── main.py                 # api entrypoint
+├── models.py               # database orm models
+└── requirements.txt
+
 ```
 
 

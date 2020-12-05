@@ -95,7 +95,7 @@ cloud_sql_proxy -instances=${PROJECT_ID}:${REGION}:${DB_INSTANCE_NAME}=tcp:5432 
 If you want to directly connect to the remote database, while the proxy is running in one session, run the following command in another shell session:
 
 ```sh
-psql "sslmode=disable host=/tmp/cloudsql/PROJECT_ID:REGION:INSTANCE_NAME user=postgres dbname=postgres"
+psql "sslmode=disable host=localhost user=postgres dbname=postgres"
 ```
 
 #### Docker and Google Container Registry

@@ -86,8 +86,10 @@ PYTHONPATH=. alembic history -vvv
 To create your migrations on a cloudsql instance:
 
 ```sh
-cloud_sql_proxy -instances=PROJECT_ID:REGION:INSTANCE_NAME -dir=/tmp/cloudsql
-# then run the commands as listed above
+cloud_sql_proxy -instances=${PROJECT_ID}:${REGION}:${DB_INSTANCE_NAME}=tcp:5432 -dir=/tmp/cloudsql
+# then run the commands as listed above, prefixed with the project id of your db
+# for example;
+# PROJECT_ID=${PROJECT_ID} PYTHONPATH=. alembic revision --autogenerate -m "initial setup"
 ```
 
 If you want to directly connect to the remote database, while the proxy is running in one session, run the following command in another shell session:

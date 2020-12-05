@@ -2,9 +2,9 @@ import os
 import time
 from logging import basicConfig
 
-from alembic import context
 from sqlalchemy import create_engine
 
+from alembic import context
 from config import apisecrets
 from models import *  # noqa
 
@@ -37,18 +37,11 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    url = None
     project_id = os.getenv('PROJECT_ID')
-
-    if project_id:
-        url = re.sub('/cloudsql/', '/tmp/cloudsql/', apisecrets.DATABASE_URL)
-    else:
-        url = apisecrets.DATABASE_URL
-
+    url = apisecrets.DATABASE_URL
     if not url:
         raise ValueError(
             f'given project id: {project_id}, database url is not set')
-
     return url
 
 

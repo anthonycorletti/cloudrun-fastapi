@@ -32,7 +32,7 @@ class Config:
             version_path = secrets_client.secret_version_path(
                 project_id, secret_id, "latest"
             )
-            secret_version = secrets_client.access_secret_version(version_path)
+            secret_version = secrets_client.access_secret_version(name=version_path)
             secret_data = secret_version.payload.data.decode("UTF-8")
             setattr(result, secret_id, secret_data)
         return result

@@ -20,17 +20,16 @@ steps:
     id: "postgres_expose_wait"
     args: ["dockerize", "-timeout=60s", "-wait=tcp://postgres:5432"]
 
-  - id: "docker_test"
-    name: "gcr.io/cloud-builders/docker"
+  - name: python:3.7
+    id: "python_install_config_test"
     args:
-      [
-        "build",
-        "-t",
-        "us.gcr.io/$PROJECT_ID/cloudrunfastapi-test",
-        "--file",
-        "./docker/test/Dockerfile",
-        ".",
-      ]
+      - "sh"
+      - "-c"
+      - |
+        pip3 install -r requirements.txt \
+        && pytest tests -s --cov=. --cov-fail-under 100 --log-cli-level info
+    env:
+      - "PROJECT_ID=$PROJECT_ID"
 
   - name: gcr.io/cloud-builders/docker
     id: "postgres_down"
@@ -38,15 +37,7 @@ steps:
 
   - id: "docker_build"
     name: "gcr.io/cloud-builders/docker"
-    args:
-      [
-        "build",
-        "-t",
-        "us.gcr.io/$PROJECT_ID/cloudrunfastapi",
-        "--file",
-        "./docker/Dockerfile",
-        ".",
-      ]
+    args: ["build", "-t", "us.gcr.io/$PROJECT_ID/cloudrunfastapi", "."]
 
   - id: "docker_push"
     name: "gcr.io/cloud-builders/docker"

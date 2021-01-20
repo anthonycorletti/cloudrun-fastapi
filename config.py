@@ -49,19 +49,13 @@ if project_id:
     apisecrets = c.build_secrets_config(project_id)
     if "pytest" in "".join(sys.argv):
         # use the container in cloudbuild
-        url = "postgresql+psycopg2://" "postgres@postgres:5432/cloudrunfastapi_test"
+        url = "postgresql+psycopg2://postgres@postgres:5432/cloudrunfastapi_test"
         apisecrets.DATABASE_URL = url
 
 # if running locally
 else:
-    GCLOUD_CONFIG_PROJECT_ID = (
-        os.popen("gcloud config get-value project").read().strip()
-    )
-    secrets_client = secretmanager.SecretManagerServiceClient()
     apisecrets = c.build_secrets_config()
     if "pytest" in "".join(sys.argv):
         # use localhost in local env
-        url = (
-            "postgresql+psycopg2://" "postgres@localhost:5432/5432/cloudrunfastapi_test"
-        )
+        url = "postgresql+psycopg2://postgres@localhost:5432/cloudrunfastapi_test"
         apisecrets.DATABASE_URL = url

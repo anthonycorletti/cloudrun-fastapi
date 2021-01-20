@@ -70,6 +70,6 @@ steps:
         "--allow-unauthenticated",
         "--revision-suffix=$SHORT_SHA",
         "--set-env-vars=PROJECT_ID=$PROJECT_ID,SHORT_SHA=$SHORT_SHA",
-        "--set-cloudsql-instances=$PROJECT_ID:us-central1:cloudrunfastapi",
+        "--set-cloudsql-instances=$PROJECT_ID:us-central1:runfastapi",
         "--service-account=cloudrunfastapi@$PROJECT_ID.iam.gserviceaccount.com",
       ]

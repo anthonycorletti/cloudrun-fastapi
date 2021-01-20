@@ -29,6 +29,7 @@ steps:
         "us.gcr.io/$PROJECT_ID/cloudrunfastapi-test",
         "--file",
         "./docker/test/Dockerfile",
+        ".",
       ]
 
   - name: gcr.io/cloud-builders/docker
@@ -44,6 +45,7 @@ steps:
         "us.gcr.io/$PROJECT_ID/cloudrunfastapi",
         "--file",
         "./docker/Dockerfile",
+        ".",
       ]
 
   - id: "docker_push"

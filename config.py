@@ -4,9 +4,7 @@ import sys
 import time
 
 from fastapi.security import OAuth2PasswordBearer
-from google.cloud import pubsub_v1
 from google.cloud import secretmanager_v1beta1 as secretmanager
-from google.cloud import storage
 
 from v1.schemas.secrets_config import SecretsConfig
 
@@ -47,9 +45,7 @@ project_id = os.getenv("PROJECT_ID")
 
 # if running in a project, cloud run or cloud build
 if project_id:
-    gcs_client = storage.Client(project=project_id)
     secrets_client = secretmanager.SecretManagerServiceClient()
-    publisher = pubsub_v1.PublisherClient()
     apisecrets = c.build_secrets_config(project_id)
     if "pytest" in "".join(sys.argv):
         # use the container in cloudbuild
@@ -61,11 +57,11 @@ else:
     GCLOUD_CONFIG_PROJECT_ID = (
         os.popen("gcloud config get-value project").read().strip()
     )
-    gcs_client = storage.Client(project=GCLOUD_CONFIG_PROJECT_ID)
     secrets_client = secretmanager.SecretManagerServiceClient()
-    publisher = pubsub_v1.PublisherClient()
     apisecrets = c.build_secrets_config()
     if "pytest" in "".join(sys.argv):
         # use localhost in local env
-        url = "postgresql+psycopg2://" "postgres@localhost:5432/cloudrunfastapi_test"
+        url = (
+            "postgresql+psycopg2://" "postgres@localhost:5432/5432/cloudrunfastapi_test"
+        )
         apisecrets.DATABASE_URL = url

@@ -4,9 +4,9 @@ from fastapi import FastAPI
 
 from v1.routers import auth, health, item, pubsub, user
 
-os.environ['TZ'] = 'UTC'
-title_detail = os.getenv('PROJECT_ID', 'Local')
-version = os.getenv('SHORT_SHA', 'local')
+os.environ["TZ"] = "UTC"
+title_detail = os.getenv("PROJECT_ID", "Local")
+version = os.getenv("SHORT_SHA", "local")
 
 api = FastAPI(title=f"CloudRun FastAPI: {title_detail}", version=version)
 

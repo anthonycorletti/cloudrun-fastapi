@@ -12,17 +12,15 @@ NAMING_CONVENTION = {
     "uq": "uq_%(table_name)s_%(column_0_name)s",
     "ck": "ck_%(table_name)s_%(constraint_name)s",
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    "pk": "pk_%(table_name)s"
+    "pk": "pk_%(table_name)s",
 }
 metadata = MetaData(naming_convention=NAMING_CONVENTION)
-engine = create_engine(apisecrets.DATABASE_URL,
-                       pool_pre_ping=True,
-                       pool_size=10,
-                       max_overflow=0)
-SessionLocal = sessionmaker(autocommit=False,
-                            expire_on_commit=False,
-                            autoflush=True,
-                            bind=engine)
+engine = create_engine(
+    apisecrets.DATABASE_URL, pool_pre_ping=True, pool_size=10, max_overflow=0
+)
+SessionLocal = sessionmaker(
+    autocommit=False, expire_on_commit=False, autoflush=True, bind=engine
+)
 Base = declarative_base()
 
 
@@ -33,8 +31,9 @@ def db_session():
         yield db
         db.commit()
     except Exception as e:
-        logger.exception("Exception raised, rolling back changes. "
-                         f"Exception: {e}.")
+        logger.exception(
+            ("Exception raised, rolling back changes. " f"Exception: {e}.")
+        )
         db.rollback()
         raise e
     finally:

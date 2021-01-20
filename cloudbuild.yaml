@@ -20,16 +20,16 @@ steps:
     id: "postgres_expose_wait"
     args: ["dockerize", "-timeout=60s", "-wait=tcp://postgres:5432"]
 
-  - name: python:3.7
-    id: "python_install_config_test"
+  - id: "docker_test"
+    name: "gcr.io/cloud-builders/docker"
     args:
-      - "sh"
-      - "-c"
-      - |
-        pip3 install -r requirements.txt \
-        && pytest tests -s --cov=. --cov-fail-under 100 --log-cli-level info
-    env:
-      - "PROJECT_ID=$PROJECT_ID"
+      [
+        "build",
+        "-t",
+        "us.gcr.io/$PROJECT_ID/cloudrunfastapi-test",
+        "--file",
+        "./docker/test/Dockerfile",
+      ]
 
   - name: gcr.io/cloud-builders/docker
     id: "postgres_down"
@@ -37,7 +37,14 @@ steps:
 
   - id: "docker_build"
     name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "us.gcr.io/$PROJECT_ID/cloudrunfastapi", "."]
+    args:
+      [
+        "build",
+        "-t",
+        "us.gcr.io/$PROJECT_ID/cloudrunfastapi",
+        "--file",
+        "./docker/Dockerfile",
+      ]
 
   - id: "docker_push"
     name: "gcr.io/cloud-builders/docker"
@@ -50,8 +57,8 @@ steps:
         "gcloud",
         "run",
         "deploy",
-        "api-$BRANCH_NAME",
-        "--image=us.gcr.io/$PROJECT_ID/api:latest",
+        "cloudrunfastapi-$BRANCH_NAME",
+        "--image=us.gcr.io/$PROJECT_ID/cloudrunfastapi:latest",
         "--cpu=2",
         "--port=8080",
         "--memory=2048Mi",
@@ -64,43 +71,5 @@ steps:
         "--revision-suffix=$SHORT_SHA",
         "--set-env-vars=PROJECT_ID=$PROJECT_ID,SHORT_SHA=$SHORT_SHA",
         "--set-cloudsql-instances=$PROJECT_ID:us-central1:cloudrunfastapi",
-        "--service-account=cloudrunsrvacct@$PROJECT_ID.iam.gserviceaccount.com"
+        "--service-account=cloudrunfastapi@$PROJECT_ID.iam.gserviceaccount.com",
       ]
-
-  - id: "create google cloud infrastructure"
-    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    args:
-        - sh
-        - -c
-        - |
-            echo "create domain name mapping ..."
-
-            gcloud beta run domain-mappings create \
-                --domain $_MY_DOMAIN \
-                --service api-master \
-                --platform managed \
-                --region us-central1 || true
-
-            echo "create google cloud scheduler job ..."
-
-            gcloud scheduler jobs create http ping \
-                --schedule="* * * * *" \
-                --uri="https://$_MY_DOMAIN/healthcheck" \
-                --http-method=GET || true
-
-            echo "create iam binding for pubsub ..."
-
-            gcloud projects add-iam-policy-binding $PROJECT_ID \
-                --member="serviceAccount:$_SERVICE_ACCOUNT_ADDRESS"\
-                --role='roles/iam.serviceAccountTokenCreator'
-
-            echo "creating topics and subscriptions ..."
-
-            gcloud pubsub topics create apipub || true
-
-            gcloud pubsub subscriptions create apisub \
-                --topic apipub \
-                --topic-project $PROJECT_ID \
-                --push-endpoint https://$_MY_DOMAIN/pubsub/receive_message \
-                --push-auth-service-account $_SERVICE_ACCOUNT_ADDRESS \
-                --expiration-period=never || true

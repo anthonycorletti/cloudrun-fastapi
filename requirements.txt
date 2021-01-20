@@ -1,5 +1,6 @@
 alembic==1.4.2
 bcrypt==3.1.7
+black==20.8b1
 email-validator==1.1.1
 fastapi==0.60.1
 flake8==3.8.4

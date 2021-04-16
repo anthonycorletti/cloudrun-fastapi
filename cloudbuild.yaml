@@ -20,7 +20,7 @@ steps:
     id: "postgres_expose_wait"
     args: ["dockerize", "-timeout=60s", "-wait=tcp://postgres:5432"]
 
-  - name: python:3.7
+  - name: python:3.8
     id: "python_install_config_test"
     args:
       - "sh"

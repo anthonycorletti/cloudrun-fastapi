@@ -12,10 +12,9 @@ class ItemDAO:
         with db_session() as db:
             return db.query(Item).filter(Item.id == id).first()
 
-    def get_by_user(self, id: UUID4, user_id: UUID4) -> Item:
+    def get_by_user(self, user_id: UUID4) -> Item:
         with db_session() as db:
-            return db.query(Item).filter(Item.id == id,
-                                         Item.user_id == user_id).first()
+            return db.query(Item).filter(Item.user_id == user_id).first()
 
     def list(self, skip: int, limit: int) -> List[Item]:
         with db_session() as db:

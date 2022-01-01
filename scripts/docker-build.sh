@@ -1,7 +1,4 @@
 #!/bin/sh -e
 
-REGISTRY_NAME="ghcr.io"
-IMAGE_NAME="cloudrunfastapi/cloudrunfastapi"
 IMAGE_VERSION=${IMAGE_VERSION:=latest}
-
-docker build -t "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_VERSION}" .
+docker build -t "anthonycorletti/cloudrunfastapi:${IMAGE_VERSION}" .

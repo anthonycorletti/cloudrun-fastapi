@@ -6,4 +6,4 @@ For all documentation visit the [docs](./docs) folder.
 
 ### Contributions & Suggestions
 
-[Pull requests](https://github.com/anthcor/cloudrun-fastapi/compare) and [issues](https://github.com/anthcor/cloudrun-fastapi/issues/new) are very welcome!
+[Pull requests](https://github.com/anthonycorletti/cloudrun-fastapi/compare) and [issues](https://github.com/anthonycorletti/cloudrun-fastapi/issues/new) are very welcome!

@@ -1,10 +1,13 @@
-FROM python:3.8.2-slim
+FROM python:3.9.6-slim
 
 WORKDIR /app
 COPY . /app
 
 RUN apt-get update -y \
-    && apt-get install -y gcc libpq-dev \
-    && pip3 install -r requirements.txt --no-cache-dir
+    && apt-get install build-essential -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install flit \
+    && FLIT_ROOT_INSTALL=1 flit install --deps production \
+    && rm -rf $(pip cache dir)
 
-CMD gunicorn main:api -c gunicorn_config.py
+CMD gunicorn cloudrunfastapi.main:api -c cloudrunfastapi/gunicorn_config.py

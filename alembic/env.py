@@ -5,12 +5,12 @@ from logging import basicConfig
 from sqlalchemy import create_engine
 
 from alembic import context
-from config import apisecrets
+from cloudrunfastapi.apienv import apienv
 from models import *  # noqa
 
 # configure local env setup
-os.environ['TZ'] = 'UTC'
-tz = time.strftime('%z')
+os.environ["TZ"] = "UTC"
+tz = time.strftime("%z")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -18,17 +18,21 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-basicConfig(format=(f'[%(asctime)s.%(msecs)03d {tz}] '
-                    '[%(process)s] [%(filename)s L%(lineno)d] '
-                    '[%(levelname)s] %(message)s'),
-            level='INFO',
-            datefmt='%Y-%m-%d %H:%M:%S')
+basicConfig(
+    format=(
+        f"[%(asctime)s.%(msecs)03d {tz}] "
+        "[%(process)s] [%(filename)s L%(lineno)d] "
+        "[%(levelname)s] %(message)s"
+    ),
+    level="INFO",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = Base.metadata  # noqa
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -37,11 +41,10 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    project_id = os.getenv('PROJECT_ID')
-    url = apisecrets.DATABASE_URL
+    project_id = os.getenv("PROJECT_ID")
+    url = apienv.DATABASE_URL
     if not url:
-        raise ValueError(
-            f'given project id: {project_id}, database url is not set')
+        raise ValueError(f"given project id: {project_id}, database url is not set")
     return url
 
 
@@ -79,8 +82,7 @@ def run_migrations_online():
     connectable = create_engine(get_url(), pool_pre_ping=True)
 
     with connectable.connect() as connection:
-        context.configure(connection=connection,
-                          target_metadata=target_metadata)
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

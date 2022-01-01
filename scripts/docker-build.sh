@@ -1,9 +1,7 @@
 #!/bin/sh -e
 
-REGISTRY_NAME="gcr.io"
-GCP_PROJECT="${GCP_PROJECT:=rungalileo-dev}"
-
-IMAGE_NAME="${GCP_PROJECT}/api"
+REGISTRY_NAME="ghcr.io"
+IMAGE_NAME="cloudrunfastapi/cloudrunfastapi"
 IMAGE_VERSION=${IMAGE_VERSION:=latest}
 
 docker build -t "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_VERSION}" .

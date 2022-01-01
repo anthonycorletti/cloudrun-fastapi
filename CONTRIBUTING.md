@@ -1,4 +1,4 @@
-# How to contribute!
+# Contributing
 
 #### **Did you find a bug?**
 

@@ -31,11 +31,9 @@ def create_test_database() -> Generator:
         drop_database(dburl)  # pragma: no cover
 
     create_engine(dburl)
-    assert not database_exists(dburl), "Test database already exists. Aborting tests."
     create_database(dburl)
     alembic_config = Config("alembic.ini")
     command.upgrade(alembic_config, "head")
-    # command.history(alembic_config, indicate_current=True)
     yield
     drop_database(dburl)
 

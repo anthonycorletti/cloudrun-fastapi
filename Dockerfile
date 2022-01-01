@@ -1,7 +1,7 @@
 FROM python:3.9.6-slim
 
-WORKDIR /app
-COPY . /app
+WORKDIR /api
+COPY . /api
 
 RUN apt-get update -y \
     && apt-get install build-essential -y \

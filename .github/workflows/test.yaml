@@ -30,10 +30,11 @@ jobs:
         run: ./scripts/install.sh
 
       - name: run dependencies
-        run: ./scripts/run-dependencies.sh
-
-      - name: run migrations
-        run: ./scripts/run-alembic-upgrade-head.sh
+        run: |
+          echo "setting local env"
+          . ./scripts/set-local-env.sh
+          echo "running dependencies"
+          ./scripts/run-dependencies.sh
 
       - name: run tests
         run: ./scripts/test.sh

@@ -33,7 +33,7 @@ jobs:
         run: ./scripts/run-dependencies.sh
 
       - name: run migrations
-        run: ./scripts/run-alebic-upgrade-heads.sh
+        run: ./scripts/run-alebic-upgrade-head.sh
 
       - name: run tests
         run: ./scripts/test.sh

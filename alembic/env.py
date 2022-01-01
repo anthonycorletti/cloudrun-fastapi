@@ -41,10 +41,9 @@ target_metadata = Base.metadata  # noqa
 
 
 def get_url():
-    project_id = os.getenv("PROJECT_ID")
     url = apienv.DATABASE_URL
     if not url:
-        raise ValueError(f"given project id: {project_id}, database url is not set")
+        raise ValueError(f"database url is not set")
     return url
 
 

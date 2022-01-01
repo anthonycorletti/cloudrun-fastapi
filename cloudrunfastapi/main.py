@@ -4,16 +4,15 @@ from typing import Any, Callable
 
 from fastapi import FastAPI, Request
 
+from cloudrunfastapi import __project_id__, __version__
 from cloudrunfastapi.routers import auth, health, item, user
 
 os.environ["TZ"] = "UTC"
-title_detail = os.getenv("PROJECT_ID", "Local")
-version = os.getenv("SHORT_SHA", "local")
 
 #
 #   create the api
 #
-api = FastAPI(title=f"CloudRun FastAPI: {title_detail}", version=version)
+api = FastAPI(title=f"CloudRun FastAPI: {__project_id__}", version=__version__)
 
 
 #

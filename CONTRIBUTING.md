@@ -101,9 +101,8 @@ To create your migrations on a cloudsql instance:
 
 ```sh
 cloud_sql_proxy -instances=${PROJECT_ID}:${REGION}:${DB_INSTANCE_NAME}=tcp:5432 -dir=/tmp/cloudsql
-# then run the commands as listed above, prefixed with the project id of your db
-# for example;
-# PROJECT_ID=${PROJECT_ID} ./scripts/run-alembic-upgrade-head.sh
+# then simply upgrade to head
+./scripts/run-alembic-upgrade-head.sh
 ```
 
 If you want to directly connect to the remote database, while the proxy is running in one session, run the following command in another shell session:

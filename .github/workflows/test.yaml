@@ -1,0 +1,42 @@
+name: test
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9"]
+      fail-fast: false
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: update ubuntu, install dependencies
+        run: sudo apt-get update -y
+
+      - name: set up python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: install dependencies
+        run: ./scripts/install.sh
+
+      - name: run dependencies
+        run: ./scripts/run-dependencies.sh
+
+      - name: run migrations
+        run: ./scripts/run-alebic-upgrade-heads.sh
+
+      - name: run tests
+        run: ./scripts/test.sh
+
+      - name: docker-build
+        run: ./scripts/docker-build.sh

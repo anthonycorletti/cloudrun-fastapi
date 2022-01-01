@@ -15,8 +15,8 @@ item_service = ItemService()
 
 @router.post("/items", response_model=ItemORM, tags=["item"])
 def create_item(
-    item_create: ItemCreate,
     current_user: User = Depends(auth_service.current_user),
+    item_create: ItemCreate = Body(...),
 ) -> Item:
     item_create.user_id = current_user.id
     return item_service.create_item(item_create)

@@ -3,17 +3,16 @@ from typing import List
 from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import UUID4
 
-from cloudrunfastapi.schemas.item import ItemCreate, ItemORM, ItemUpdate
+from cloudrunfastapi.models import Item, ItemCreate, ItemDB, ItemUpdate, User
 from cloudrunfastapi.services.auth import AuthService
 from cloudrunfastapi.services.item import ItemService
-from models import Item, User
 
 router = APIRouter()
 auth_service = AuthService()
 item_service = ItemService()
 
 
-@router.post("/items", response_model=ItemORM, tags=["item"])
+@router.post("/items", response_model=ItemDB, tags=["item"])
 def create_item(
     current_user: User = Depends(auth_service.current_user),
     item_create: ItemCreate = Body(...),
@@ -22,7 +21,7 @@ def create_item(
     return item_service.create_item(item_create)
 
 
-@router.get("/items/{id}", response_model=ItemORM, tags=["item"])
+@router.get("/items/{id}", response_model=ItemDB, tags=["item"])
 def get_item(
     id: UUID4, current_user: User = Depends(auth_service.current_user)
 ) -> Item:
@@ -32,7 +31,7 @@ def get_item(
     return item
 
 
-@router.get("/items", response_model=List[ItemORM], tags=["item"])
+@router.get("/items", response_model=List[ItemDB], tags=["item"])
 def list_items(
     skip: int = 0,
     limit: int = 100,
@@ -44,7 +43,7 @@ def list_items(
     return items
 
 
-@router.put("/items/{id}", response_model=ItemORM, tags=["item"])
+@router.put("/items/{id}", response_model=ItemDB, tags=["item"])
 def update_item(
     id: UUID4,
     current_user: User = Depends(auth_service.current_user),

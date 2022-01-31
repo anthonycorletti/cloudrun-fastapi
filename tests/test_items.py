@@ -2,8 +2,7 @@ import uuid
 
 from starlette.testclient import TestClient
 
-from cloudrunfastapi.schemas.item import ItemCreate, ItemUpdate
-from cloudrunfastapi.schemas.user import UserCreate
+from cloudrunfastapi.models import ItemCreate, ItemUpdate, UserCreate
 from tests.mocks import MockAuth, MockUsers
 
 mock_auth = MockAuth()
@@ -28,6 +27,7 @@ def test_create_item(client: TestClient) -> None:
     response = client.post("/users", json=mock_user_alice_dict)
     assert response.status_code == 200
     user_id = response.json().get("id")
+    mock_item_dict["user_id"] = user_id
 
     response = client.post(
         "/items",

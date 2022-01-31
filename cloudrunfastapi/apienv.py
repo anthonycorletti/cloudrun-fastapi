@@ -11,7 +11,9 @@ class ApiEnv(BaseModel):
 
 if "pytest" in "".join(sys.argv):
     apienv = ApiEnv(
-        DATABASE_URL="postgresql+psycopg2://cloud:run@127.0.0.1:5432/cloudrunfastapi",
+        DATABASE_URL=(
+            "postgresql+psycopg2://cloud:run@127.0.0.1:5432/" "cloudrunfastapi_test"
+        ),
         API_SECRET_KEY="cloudrunfastapi235",
     )
 else:

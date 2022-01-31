@@ -1,6 +1,6 @@
 from starlette.testclient import TestClient
 
-from cloudrunfastapi.schemas.user import UserCreate
+from cloudrunfastapi.models import UserCreate
 from tests.mocks import MockAuth
 
 mock_auth = MockAuth()

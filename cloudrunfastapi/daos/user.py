@@ -3,8 +3,7 @@ from typing import List
 from pydantic import UUID4, EmailStr
 
 from cloudrunfastapi.database import db_session
-from cloudrunfastapi.schemas.user import UserCreate, UserUpdate
-from models import User
+from cloudrunfastapi.models import User, UserCreate, UserUpdate
 
 
 class UserDAO:

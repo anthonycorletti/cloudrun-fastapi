@@ -7,10 +7,9 @@ from cloudrunfastapi.logger import logger
 from cloudrunfastapi.schemas.health import HealthcheckResponse
 
 router = APIRouter()
-tags = ["health"]
 
 
-@router.get("/healthcheck", response_model=HealthcheckResponse, tags=tags)
+@router.get("/healthcheck", response_model=HealthcheckResponse, tags=["health"])
 def healthcheck() -> HealthcheckResponse:
     message = "We're on the air."
     logger.info(message)

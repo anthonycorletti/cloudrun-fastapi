@@ -12,7 +12,7 @@ os.environ["TZ"] = "UTC"
 #
 #   create the api
 #
-api = FastAPI(title=f"CloudRun FastAPI: {__project_id__}", version=__version__)
+api = FastAPI(title=f"Cloud Run FastAPI: {__project_id__}", version=__version__)
 
 
 #

@@ -3,10 +3,11 @@ import time
 from logging import basicConfig
 
 from sqlalchemy import create_engine
+from sqlmodel import SQLModel
 
 from alembic import context
 from cloudrunfastapi.apienv import apienv
-from models import *  # noqa
+from cloudrunfastapi.models import Item, User  # noqa
 
 # configure local env setup
 os.environ["TZ"] = "UTC"
@@ -32,7 +33,7 @@ basicConfig(
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata  # noqa
+target_metadata = SQLModel.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -40,14 +41,14 @@ target_metadata = Base.metadata  # noqa
 # ... etc.
 
 
-def get_url():
+def get_url() -> str:
     url = apienv.DATABASE_URL
     if not url:
-        raise ValueError(f"database url is not set")
+        raise ValueError("database url is not set")
     return url
 
 
-def run_migrations_offline():
+def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
     This configures the context with just a URL
@@ -71,7 +72,7 @@ def run_migrations_offline():
         context.run_migrations()
 
 
-def run_migrations_online():
+def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine

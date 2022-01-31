@@ -18,7 +18,6 @@ NAMING_CONVENTION = {
 }
 metadata = MetaData(naming_convention=NAMING_CONVENTION)
 
-
 engine = create_engine(
     apienv.DATABASE_URL,
     pool_pre_ping=True,

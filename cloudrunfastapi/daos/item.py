@@ -3,8 +3,7 @@ from typing import List
 from pydantic import UUID4
 
 from cloudrunfastapi.database import db_session
-from cloudrunfastapi.schemas.item import ItemCreate, ItemUpdate
-from models import Item
+from cloudrunfastapi.models import Item, ItemCreate, ItemUpdate
 
 
 class ItemDAO:

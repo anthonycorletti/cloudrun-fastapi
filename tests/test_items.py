@@ -38,7 +38,7 @@ def test_create_item(client: TestClient) -> None:
     body = response.json()
     assert body.get("id")
     assert body.get("created_at") and body.get("updated_at")
-    assert body.get("name") == "Item name"
+    assert body.get("name") == "A New Item"
     assert body.get("user_id") == user_id
 
 
@@ -58,7 +58,7 @@ def test_get_item(client: TestClient) -> None:
     assert response.status_code == 200
     body = response.json()
     assert body.get("id") == id
-    assert body.get("name") == "Item name"
+    assert body.get("name") == "A New Item"
 
 
 def test_no_item(client: TestClient) -> None:
@@ -116,7 +116,7 @@ def test_update_item(client: TestClient) -> None:
     assert body.get("id") == id
     assert body.get("user_id") == user_id
     assert body.get("created_at") < body.get("updated_at")
-    assert body.get("name") == "Updated item name"
+    assert body.get("name") == "A New New Item"
 
 
 def test_delete_item(client: TestClient) -> None:

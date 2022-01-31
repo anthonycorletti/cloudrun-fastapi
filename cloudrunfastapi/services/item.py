@@ -19,7 +19,7 @@ class ItemService:
         return item_dao.list(skip, limit)
 
     def get_user_item(self, id: UUID4, user_id: UUID4) -> Item:
-        return item_dao.get_by_user(id, user_id)
+        return item_dao.get_item_for_user(id, user_id)
 
     def update_item(self, id: UUID4, item_update: ItemUpdate) -> Item:
         return item_dao.update(id, item_update)

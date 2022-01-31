@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Union
 
@@ -63,7 +62,7 @@ class AuthService:
             id = payload["id"]
         except PyJWTError:
             raise CREDENTIALS_EXCEPTION
-        return user_service.get_user(uuid.UUID(id))
+        return user_service.get_user(id)
 
     def create_valid_password_hash(self, data: Optional[str]) -> str:
         def valid_pass(password_hash: str) -> bool:

@@ -5,9 +5,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
 from starlette import status
 
+from cloudrunfastapi.models import User
 from cloudrunfastapi.schemas.auth import Token
 from cloudrunfastapi.services.auth import AuthService
-from models import User
 
 TOKEN_EXPIRE_MINUTES = 43200
 

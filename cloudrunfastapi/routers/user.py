@@ -3,26 +3,28 @@ from typing import List
 from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import UUID4
 
-from cloudrunfastapi.schemas.user import UserCreate, UserORM, UserUpdate
+from cloudrunfastapi.models import User, UserCreate, UserDB, UserUpdate
 from cloudrunfastapi.services.auth import AuthService
 from cloudrunfastapi.services.user import UserService
-from models import User
 
 router = APIRouter()
 auth_service = AuthService()
 user_service = UserService()
 
 
-@router.post("/users", response_model=UserORM, tags=["user"])
+@router.post("/users", response_model=UserDB, tags=["user"])
 def create_user(
     user_create: UserCreate = Body(...),
 ) -> User:
     if user_service.get_user_by_email(user_create.email):
         raise HTTPException(status_code=422, detail="This email is taken. Try another.")
+    user_create.password_hash = auth_service.create_valid_password_hash(
+        data=user_create.password_hash
+    )
     return user_service.create_user(user_create)
 
 
-@router.get("/users/{id}", response_model=UserORM, tags=["user"])
+@router.get("/users/{id}", response_model=UserDB, tags=["user"])
 def get_user(
     id: UUID4, current_user: User = Depends(auth_service.current_user)
 ) -> User:
@@ -32,7 +34,7 @@ def get_user(
     return user
 
 
-@router.get("/users", response_model=List[UserORM], tags=["user"])
+@router.get("/users", response_model=List[UserDB], tags=["user"])
 def list_users(
     skip: int = 0,
     limit: int = 100,
@@ -41,7 +43,7 @@ def list_users(
     return user_service.list_users(skip, limit)
 
 
-@router.put("/users", response_model=UserORM, tags=["user"])
+@router.put("/users", response_model=UserDB, tags=["user"])
 def update_user(
     current_user: User = Depends(auth_service.current_user),
     user_update: UserUpdate = Body(...),

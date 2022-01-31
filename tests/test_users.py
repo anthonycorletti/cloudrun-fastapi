@@ -3,7 +3,7 @@ import uuid
 
 from starlette.testclient import TestClient
 
-from cloudrunfastapi.schemas.user import UserCreate, UserUpdate
+from cloudrunfastapi.models import UserCreate, UserUpdate
 from tests.mocks import MockAuth, MockUsers
 
 mock_auth = MockAuth()
@@ -90,7 +90,7 @@ def test_delete_user(client: TestClient) -> None:
         json={
             "name": "Charlie Smith",
             "email": "charlie@example.com",
-            "password": "Thes3cret_",
+            "password_hash": "Th3secret_",
             "bio": "logy #puns",
         },
     )
@@ -102,7 +102,7 @@ def test_delete_user(client: TestClient) -> None:
             {
                 "name": "Charlie Smith",
                 "email": "charlie@example.com",
-                "password": "Thes3cret_",
+                "password_hash": "Th3secret_",
                 "bio": "logy #puns",
             },
             client,
@@ -124,7 +124,7 @@ def test_delete_user(client: TestClient) -> None:
             {
                 "name": "Charlie Smith",
                 "email": "charlie@example.com",
-                "password": "Thes3cret_",
+                "password_hash": "Th3secret_",
                 "bio": "logy #puns",
             },
             client,
@@ -137,7 +137,7 @@ def test_delete_user(client: TestClient) -> None:
 
 def test_bio_too_long(client: TestClient) -> None:
     mock_user = copy.copy(mock_user_bob_dict)
-    mock_user["bio"] = "?" * 161
+    mock_user["bio"] = "?" * 100 * 100
     response = client.post("/users", json=mock_user)
     assert response.status_code == 422
     assert response.json().get("detail")[0].get("msg") == "Bio is too long."
@@ -145,10 +145,10 @@ def test_bio_too_long(client: TestClient) -> None:
 
 def test_bad_password(client: TestClient) -> None:
     mock_user = copy.copy(mock_user_bob_dict)
-    mock_user["password"] = "short"
+    mock_user["password_hash"] = "short"
     response = client.post("/users", json=mock_user)
     assert response.status_code == 422
-    assert response.json().get("detail")[0].get("msg") == (
+    assert response.json().get("detail") == (
         "Password must be 8 characters or more and have a mix of uppercase, "
         "lowercase, numbers, and special characters."
     )

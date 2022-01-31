@@ -2,8 +2,9 @@ import logging
 from typing import Generator
 
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy.orm import close_all_sessions
 from sqlalchemy_utils import create_database, database_exists, drop_database
+from sqlmodel import create_engine
 from starlette.config import environ
 from starlette.testclient import TestClient
 
@@ -30,11 +31,12 @@ def create_test_database() -> Generator:
         )
         drop_database(dburl)  # pragma: no cover
 
-    create_engine(dburl)
+    create_engine(dburl, pool_pre_ping=True)
     create_database(dburl)
     alembic_config = Config("alembic.ini")
     command.upgrade(alembic_config, "head")
     yield
+    close_all_sessions()
     drop_database(dburl)
 
 

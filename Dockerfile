@@ -10,4 +10,4 @@ RUN apt-get update -y \
     && FLIT_ROOT_INSTALL=1 flit install --deps production \
     && rm -rf $(pip cache dir)
 
-CMD gunicorn cloudrunfastapi.main:api -c cloudrunfastapi/gunicorn_config.py
+CMD uvicorn cloudrunfastapi.main:api --reload

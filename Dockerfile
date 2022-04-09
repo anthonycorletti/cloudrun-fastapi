@@ -10,4 +10,4 @@ RUN apt-get update -y \
     && FLIT_ROOT_INSTALL=1 flit install --deps production \
     && rm -rf $(pip cache dir)
 
-CMD uvicorn cloudrunfastapi.main:api --reload
+CMD uvicorn cloudrunfastapi.main:api --host 0.0.0.0 --port 80

@@ -77,12 +77,7 @@ class User(UserBaseWithPasswordHash, TimestampsMixin, table=True):
     id: UUID4 = Field(default_factory=uuid.uuid4, primary_key=True, nullable=False)
     items: List["Item"] = Relationship(
         back_populates="user",
-        sa_relationship_kwargs=dict(lazy="subquery"),
     )
-
-    class Config:
-        orm_mode = True
-        read_with_orm_mode = True
 
 
 class UserDB(UserBase):
@@ -128,12 +123,7 @@ class Item(ItemBase, TimestampsMixin, table=True):
     user_id: UUID4 = Field(default=None, foreign_key="users.id", nullable=False)
     user: User = Relationship(
         back_populates="items",
-        sa_relationship_kwargs=dict(lazy="subquery"),
     )
-
-    class Config:
-        orm_mode = True
-        read_with_orm_mode = True
 
 
 class ItemDB(ItemBase):
@@ -142,9 +132,6 @@ class ItemDB(ItemBase):
     created_at: datetime
     updated_at: datetime
     user: User
-
-    class Config:
-        orm_mode = True
 
 
 UserDB.update_forward_refs()

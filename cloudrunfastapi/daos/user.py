@@ -1,7 +1,6 @@
 from typing import List
 
 from pydantic import UUID4, EmailStr
-from sqlmodel import select
 
 from cloudrunfastapi.database import db_session
 from cloudrunfastapi.models import User, UserCreate, UserUpdate
@@ -10,15 +9,15 @@ from cloudrunfastapi.models import User, UserCreate, UserUpdate
 class UserDAO:
     def get(self, id: UUID4) -> User:
         with db_session() as db:
-            return db.exec(select(User).where(User.id == id)).first()
+            return db.query(User).filter(User.id == id).first()
 
     def list(self, skip: int, limit: int) -> List[User]:
         with db_session() as db:
-            return db.exec(select(User).offset(skip).limit(limit)).all()
+            return db.query(User).offset(skip).limit(limit).all()
 
     def get_by_email(self, email: EmailStr) -> User:
         with db_session() as db:
-            return db.exec(select(User).where(User.email == email)).first()
+            return db.query(User).where(User.email == email).first()
 
     def create(self, user_create: UserCreate) -> User:
         with db_session() as db:
@@ -37,7 +36,7 @@ class UserDAO:
 
     def delete(self, id: UUID4) -> None:
         with db_session() as db:
-            user = db.exec(select(User).where(User.id == id)).first()
+            user = db.query(User).filter(User.id == id).first()
             db.delete(user)
             db.commit()
         return

@@ -33,4 +33,4 @@ class ApiEnv(BaseSettings):
 if "pytest" in "".join(sys.argv):
     apienv = ApiEnv(_env_file=".env.test")
 else:
-    apienv = ApiEnv()
+    apienv = ApiEnv()  # pragma: no cover

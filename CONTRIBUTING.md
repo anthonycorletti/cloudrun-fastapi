@@ -99,14 +99,16 @@ alembic history -vvv
 
 To create your migrations on a cloudsql instance:
 
+First install and configure `cloud_sql_proxy`; https://cloud.google.com/sql/docs/mysql/connect-instance-auth-proxy#gcloud
+
 ```sh
 cloud_sql_proxy -instances=${PROJECT_ID}:${REGION}:${DB_INSTANCE_NAME}=tcp:5432 -dir=/tmp/cloudsql
 # then simply upgrade to head
-./scripts/run-alembic-upgrade-head.sh
+./scripts/alembic-upgrade-head.sh
 ```
 
 If you want to directly connect to the remote database, while the proxy is running in one session, run the following command in another shell session:
 
 ```sh
-psql "sslmode=disable host=localhost user=postgres dbname=postgres"
+psql "sslmode=disable host=localhost user=USERNAME dbname=DATABASENAME"
 ```

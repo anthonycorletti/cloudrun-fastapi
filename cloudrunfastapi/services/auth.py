@@ -7,15 +7,18 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from passlib.context import CryptContext
 from pydantic import EmailStr
+from sqlmodel import Session
 from starlette import status
 
 from cloudrunfastapi.apienv import apienv
+from cloudrunfastapi.database import get_db
 from cloudrunfastapi.models import User
-from cloudrunfastapi.services.user import UserService
+from cloudrunfastapi.services.user import user_service
 
-user_service = UserService()
 oauth2_scheme_pwdbearer_route = "/login"
-oauth2_scheme_pwdbearer = OAuth2PasswordBearer(tokenUrl=oauth2_scheme_pwdbearer_route)
+oauth2_scheme_pwdbearer = OAuth2PasswordBearer(
+    tokenUrl=oauth2_scheme_pwdbearer_route,
+)
 PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 PASS_MIN_LENGTH = 8
 INVALID_PASS_MSG = (
@@ -33,11 +36,15 @@ CREDENTIALS_EXCEPTION = HTTPException(
 
 
 class AuthService:
+    TOKEN_EXPIRE_MINUTES = 43200
+
     def valid_password(self, plain_pass: str, hashed_pass: str) -> bool:
         return PWD_CONTEXT.verify(plain_pass, hashed_pass)
 
-    def authenticate_user(self, email: EmailStr, password: str) -> Union[None, User]:
-        user = user_service.get_user_by_email(email)
+    def authenticate_user(
+        self, db: Session, email: EmailStr, password: str
+    ) -> Union[None, User]:
+        user = user_service.get_user_by_email(db=db, email=email)
         if not user:
             return None
         assert user.password_hash
@@ -54,7 +61,11 @@ class AuthService:
         )
         return encoded_jwt
 
-    def current_user(self, token: str = Depends(oauth2_scheme_pwdbearer)) -> User:
+    def current_user(
+        self,
+        token: str = Depends(oauth2_scheme_pwdbearer),
+        db: Session = Depends(get_db),
+    ) -> Optional[User]:
         try:
             payload = jwt.decode(
                 token, API_SECRET_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM]
@@ -62,7 +73,7 @@ class AuthService:
             id = payload["id"]
         except PyJWTError:
             raise CREDENTIALS_EXCEPTION
-        return user_service.get_user(id)
+        return user_service.get_user(db=db, id=id)
 
     def create_valid_password_hash(self, data: Optional[str]) -> str:
         def valid_pass(password_hash: str) -> bool:
@@ -78,3 +89,6 @@ class AuthService:
         if not data or not valid_pass(data):
             raise HTTPException(status_code=422, detail=INVALID_PASS_MSG)
         return hash_password(data)
+
+
+auth_service = AuthService()

@@ -51,8 +51,8 @@ class UserCreate(UserBaseWithPasswordHash):
     class Config:
         schema_extra = {
             "example": {
-                "name": "Bob Smith",
-                "email": "bob@example.com",
+                "name": "Firstname Lastname",
+                "email": "user@example.com",
                 "password_hash": "Th3secret_",
                 "bio": "logy #puns",
             }
@@ -65,8 +65,8 @@ class UserUpdate(UserBase):
     class Config:
         schema_extra = {
             "example": {
-                "name": "Robert Smith",
-                "email": "robert@example.io",
+                "name": "New Name",
+                "email": "new@example.io",
                 "bio": "metrics #puns",
             }
         }
@@ -80,7 +80,7 @@ class User(UserBaseWithPasswordHash, TimestampsMixin, table=True):
     )
 
 
-class UserDB(UserBase):
+class UserRead(UserBase):
     id: UUID4
     created_at: datetime
     updated_at: datetime
@@ -126,7 +126,7 @@ class Item(ItemBase, TimestampsMixin, table=True):
     )
 
 
-class ItemDB(ItemBase):
+class ItemRead(ItemBase):
     id: UUID4
     user_id: UUID4
     created_at: datetime
@@ -134,4 +134,4 @@ class ItemDB(ItemBase):
     user: User
 
 
-UserDB.update_forward_refs()
+UserRead.update_forward_refs()

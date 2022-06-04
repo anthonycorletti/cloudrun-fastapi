@@ -1,28 +1,40 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import UUID4
+from sqlmodel import Session
 
-from cloudrunfastapi.daos.item import ItemDAO
 from cloudrunfastapi.models import Item, ItemCreate, ItemUpdate
-
-item_dao = ItemDAO()
 
 
 class ItemService:
-    def create_item(self, item_create: ItemCreate) -> Item:
-        return item_dao.create(item_create)
+    def create_item(self, db: Session, item_create: ItemCreate) -> Item:
+        item = Item(**item_create.dict())
+        db.add(item)
+        db.commit()
+        db.refresh(item)
+        return item
 
-    def get_item(self, id: UUID4) -> Item:
-        return item_dao.get(id)
+    def get_item(self, db: Session, id: UUID4) -> Optional[Item]:
+        return db.query(Item).filter(Item.id == id).first()
 
-    def list_items(self, skip: int, limit: int) -> List[Item]:
-        return item_dao.list(skip, limit)
+    def list_items(self, db: Session, skip: int, limit: int) -> List[Item]:
+        return db.query(Item).offset(skip).limit(limit).all()
 
-    def get_user_item(self, id: UUID4, user_id: UUID4) -> Item:
-        return item_dao.get_item_for_user(id, user_id)
+    def get_user_item(self, db: Session, id: UUID4, user_id: UUID4) -> Optional[Item]:
+        return db.query(Item).filter(Item.id == id, Item.user_id == user_id).first()
 
-    def update_item(self, id: UUID4, item_update: ItemUpdate) -> Item:
-        return item_dao.update(id, item_update)
+    def update_item(
+        self, db: Session, id: UUID4, item_update: ItemUpdate
+    ) -> Optional[Item]:
+        db.query(Item).filter(Item.id == id).update(item_update.dict())
+        db.commit()
+        return self.get_item(db=db, id=id)
 
-    def delete_item(self, id: UUID4) -> None:
-        return item_dao.delete(id)
+    def delete_item(self, db: Session, id: UUID4) -> None:
+        item = db.query(Item).filter(Item.id == id).first()
+        db.delete(item)
+        db.commit()
+        return
+
+
+item_service = ItemService()

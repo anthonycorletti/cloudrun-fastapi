@@ -1,26 +1,34 @@
-from contextlib import contextmanager
 from typing import Generator
 
-from sqlmodel import MetaData, Session, create_engine
+from sqlmodel import Session, create_engine
 from sqlmodel.sql.expression import Select, SelectOfScalar
 
 from cloudrunfastapi.apienv import apienv
+from cloudrunfastapi.logger import logger
 
 # TODO: these should not have to be set
 SelectOfScalar.inherit_cache = True  # type: ignore
 Select.inherit_cache = True  # type: ignore
 
-NAMING_CONVENTION = {
-    "ix": "ix_%(column_0_label)s",
-    "uq": "uq_%(table_name)s_%(column_0_name)s",
-    "ck": "ck_%(table_name)s_%(constraint_name)s",
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    "pk": "pk_%(table_name)s",
-}
-engine = create_engine(apienv.DATABASE_URL, pool_pre_ping=True)
-metadata = MetaData(naming_convention=NAMING_CONVENTION)
+engine = create_engine(
+    url=apienv.DATABASE_URL,
+    pool_size=apienv.DB_POOL_SIZE,
+    max_overflow=apienv.DB_MAX_OVERFLOW,
+    pool_pre_ping=True,
+)
 
 
-@contextmanager
-def db_session() -> Generator:
-    yield Session(autoflush=True, bind=engine)
+def get_db() -> Generator:
+    db = Session(
+        autoflush=True,
+        autocommit=False,
+        bind=engine,
+    )
+    try:
+        logger.debug("yielding db")
+        yield db
+        logger.debug("yielded db")
+    finally:
+        logger.debug("closing db")
+        db.close()
+        logger.debug("db closed")

@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from cloudrunfastapi import __version__
 from cloudrunfastapi.logger import logger
-from cloudrunfastapi.schemas.health import HealthcheckResponse
+from cloudrunfastapi.types import HealthcheckResponse
 
 router = APIRouter()
 

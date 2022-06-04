@@ -3,22 +3,23 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
+from sqlmodel import Session
 from starlette import status
 
+from cloudrunfastapi.database import get_db
 from cloudrunfastapi.models import User
-from cloudrunfastapi.schemas.auth import Token
-from cloudrunfastapi.services.auth import AuthService
-
-TOKEN_EXPIRE_MINUTES = 43200
+from cloudrunfastapi.services.auth import auth_service
+from cloudrunfastapi.types import Token
 
 router = APIRouter()
-auth_service = AuthService()
 
 
 @router.post("/login", response_model=Token, tags=["auth"])
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Token:
+def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+) -> Token:
     user = auth_service.authenticate_user(
-        EmailStr(form_data.username), form_data.password
+        db=db, email=EmailStr(form_data.username), password=form_data.password
     )
     if not user:
         raise HTTPException(
@@ -28,7 +29,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> 
         )
     access_token = auth_service.create_access_token(
         data={"id": str(user.id), "email": user.email},
-        expires_delta=timedelta(minutes=TOKEN_EXPIRE_MINUTES),
+        expires_delta=timedelta(minutes=auth_service.TOKEN_EXPIRE_MINUTES),
     )
     return Token(access_token=access_token, token_type="bearer")
 

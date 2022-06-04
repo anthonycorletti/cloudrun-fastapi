@@ -72,7 +72,7 @@ def test_update_user(client: TestClient) -> None:
     assert body.get("id")
     assert body.get("created_at") < body.get("updated_at")
     assert body.get("name") == "Robert Smith"
-    assert body.get("email") == "robert@example.io"
+    assert body.get("email") == "new@example.io"
 
 
 def test_update_user_no_duplicate_emails(client: TestClient) -> None:
@@ -88,8 +88,8 @@ def test_delete_user(client: TestClient) -> None:
     response = client.post(
         "/users",
         json={
-            "name": "Charlie Smith",
-            "email": "charlie@example.com",
+            "name": "Another User",
+            "email": "anotheruser@example.com",
             "password_hash": "Th3secret_",
             "bio": "logy #puns",
         },
@@ -100,8 +100,8 @@ def test_delete_user(client: TestClient) -> None:
         "/users",
         headers=mock_auth.mock_auth_header(
             {
-                "name": "Charlie Smith",
-                "email": "charlie@example.com",
+                "name": "Another User",
+                "email": "anotheruser@example.com",
                 "password_hash": "Th3secret_",
                 "bio": "logy #puns",
             },
@@ -122,8 +122,8 @@ def test_delete_user(client: TestClient) -> None:
         "/users",
         headers=mock_auth.mock_auth_header(
             {
-                "name": "Charlie Smith",
-                "email": "charlie@example.com",
+                "name": "Another User",
+                "email": "anotheruser@example.com",
                 "password_hash": "Th3secret_",
                 "bio": "logy #puns",
             },

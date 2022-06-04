@@ -12,7 +12,7 @@ def test_unauthorized(client: TestClient) -> None:
     assert response.status_code == 200
 
     response = client.post(
-        "/login", data={"username": "bob@example.com", "password": "nope"}
+        "/login", data={"username": "user@example.com", "password": "nope"}
     )
     assert response.status_code == 401
 

@@ -51,7 +51,7 @@ class UserCreate(UserBaseWithPasswordHash):
     class Config:
         schema_extra = {
             "example": {
-                "name": "Firstname Lastname",
+                "name": "Bob Smith",
                 "email": "user@example.com",
                 "password_hash": "Th3secret_",
                 "bio": "logy #puns",
@@ -65,7 +65,7 @@ class UserUpdate(UserBase):
     class Config:
         schema_extra = {
             "example": {
-                "name": "New Name",
+                "name": "Robert Smith",
                 "email": "new@example.io",
                 "bio": "metrics #puns",
             }

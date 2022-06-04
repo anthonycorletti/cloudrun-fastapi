@@ -30,6 +30,7 @@ class ApiEnv(BaseSettings):
         env_encoding = "utf-8"
 
 
-apienv = ApiEnv()
 if "pytest" in "".join(sys.argv):
     apienv = ApiEnv(_env_file=".env.test")
+else:
+    apienv = ApiEnv()

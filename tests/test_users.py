@@ -18,7 +18,7 @@ def test_create_user(client: TestClient) -> None:
     body = response.json()
     assert body.get("id")
     assert body.get("created_at") and body.get("updated_at")
-    assert body.get("name") == "Bob Smith"
+    assert body.get("name") == "Firstname Lastname"
     assert body.get("items") == []
 
 

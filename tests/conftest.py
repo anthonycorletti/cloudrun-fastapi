@@ -1,5 +1,5 @@
 import logging
-from typing import Generator
+from typing import Dict, Generator
 
 import pytest
 from sqlalchemy.orm import close_all_sessions
@@ -12,6 +12,7 @@ from alembic import command
 from alembic.config import Config
 from cloudrunfastapi.apienv import apienv
 from cloudrunfastapi.main import api
+from cloudrunfastapi.models import UserCreate
 
 # This sets `os.environ`, but provides some additional protection.
 # If we placed it below the application import, it would raise an error
@@ -44,3 +45,17 @@ def create_test_database() -> Generator:
 def client() -> Generator:
     with TestClient(api) as client:
         yield client
+
+
+@pytest.fixture()
+def user_data() -> Dict:
+    return UserCreate.Config.schema_extra["example"]
+
+
+def mock_auth_header(client: TestClient, user_data: Dict) -> Dict:
+    oauth_form = {
+        "username": user_data.get("email"),
+        "password": user_data.get("password_hash"),
+    }
+    response = client.post("/login", data=oauth_form)
+    return {"Authorization": f"Bearer {response.json().get('access_token')}"}

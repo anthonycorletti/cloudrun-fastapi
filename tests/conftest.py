@@ -12,7 +12,7 @@ from alembic import command
 from alembic.config import Config
 from cloudrunfastapi.apienv import apienv
 from cloudrunfastapi.main import api
-from cloudrunfastapi.models import UserCreate
+from cloudrunfastapi.models import ItemCreate, UserCreate
 
 # This sets `os.environ`, but provides some additional protection.
 # If we placed it below the application import, it would raise an error
@@ -50,6 +50,19 @@ def client() -> Generator:
 @pytest.fixture()
 def user_data() -> Dict:
     return UserCreate.Config.schema_extra["example"]
+
+
+@pytest.fixture()
+def item_data() -> Dict:
+    return ItemCreate.Config.schema_extra["example"]
+
+
+@pytest.fixture(autouse=True)
+def headers() -> Dict:
+    with TestClient(api) as client:
+        user_data = UserCreate.Config.schema_extra["example"]
+        client.post("/users", json=user_data)
+        return mock_auth_header(client, user_data)
 
 
 def mock_auth_header(client: TestClient, user_data: Dict) -> Dict:

@@ -6,10 +6,10 @@ from tests.conftest import mock_auth_header
 
 
 def test_user_unauthorized(client: TestClient, user_data: Dict) -> None:
-    response = client.post("/users", json=user_data)
-    assert response.status_code == 200
+    # response = client.post("/users", json=user_data)
+    # assert response.status_code == 200
     response = client.post(
-        "/login", data={"username": "user@example.com", "password": "nope"}
+        "/login", data={"username": user_data["email"], "password": "nope"}
     )
     assert response.status_code == 401
 

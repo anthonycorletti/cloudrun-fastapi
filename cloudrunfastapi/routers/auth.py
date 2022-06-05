@@ -34,6 +34,11 @@ def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
+@router.get("/current_user", response_model=User, tags=["auth"])
+def current_user(current_user: User = Depends(auth_service.current_user)) -> User:
+    return current_user
+
+
 @router.post("/logout", response_model=Token, tags=["auth"])
 def logout(current_user: User = Depends(auth_service.current_user)) -> Token:
     return Token(access_token="", token_type="bearer")

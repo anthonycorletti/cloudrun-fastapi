@@ -1,39 +1,19 @@
 import uuid
+from typing import Dict
 
 from starlette.testclient import TestClient
 
-from cloudrunfastapi.models import ItemCreate, ItemUpdate, UserCreate
-from tests.mocks import MockAuth, MockUsers
 
-mock_auth = MockAuth()
-mock_user_bob_dict = UserCreate.Config.schema_extra["example"]
-mock_user_alice_dict = MockUsers.mock_user_alice
-mock_item_dict = ItemCreate.Config.schema_extra["example"]
-mock_item_updated_dict = ItemUpdate.Config.schema_extra["example"]
-
-
-def test_no_items(client: TestClient) -> None:
-    response = client.post("/users", json=mock_user_bob_dict)
-    assert response.status_code == 200
-
-    response = client.get(
-        "/items",
-        headers=mock_auth.mock_auth_header(mock_user_bob_dict, client),
-    )
+def test_no_items(client: TestClient, headers: Dict) -> None:
+    response = client.get("/items", headers=headers)
     assert response.status_code == 400
 
 
-def test_create_item(client: TestClient) -> None:
-    response = client.post("/users", json=mock_user_alice_dict)
-    assert response.status_code == 200
+def test_create_item(client: TestClient, item_data: Dict, headers: Dict) -> None:
+    response = client.get("/current_user", headers=headers)
     user_id = response.json().get("id")
-    mock_item_dict["user_id"] = user_id
-
-    response = client.post(
-        "/items",
-        json=mock_item_dict,
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+    item_data["user_id"] = user_id
+    response = client.post("/items", json=item_data, headers=headers)
     assert response.status_code == 200
     body = response.json()
     assert body.get("id")
@@ -42,75 +22,64 @@ def test_create_item(client: TestClient) -> None:
     assert body.get("user_id") == user_id
 
 
-def test_get_item(client: TestClient) -> None:
-    response = client.post(
-        "/items",
-        json=mock_item_dict,
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+def test_get_item(client: TestClient, item_data: Dict, headers: Dict) -> None:
+    response = client.get("/current_user", headers=headers)
+    user_id = response.json().get("id")
+    item_data["user_id"] = user_id
+
+    response = client.post("/items", json=item_data, headers=headers)
     assert response.status_code == 200
     id = response.json().get("id")
 
-    response = client.get(
-        f"/items/{id}",
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+    response = client.get(f"/items/{id}", headers=headers)
     assert response.status_code == 200
     body = response.json()
     assert body.get("id") == id
     assert body.get("name") == "A New Item"
 
 
-def test_no_item(client: TestClient) -> None:
-    response = client.get(
-        f"/items/{uuid.uuid4()}",
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+def test_no_item(client: TestClient, headers: Dict) -> None:
+    response = client.get(f"/items/{uuid.uuid4()}", headers=headers)
     assert response.status_code == 400
 
 
-def test_no_item_update(client: TestClient) -> None:
-    response = client.put(
-        f"/items/{uuid.uuid4()}",
-        json=mock_item_dict,
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+def test_no_item_update(client: TestClient, item_data: Dict, headers: Dict) -> None:
+    _item_data = item_data.copy()
+    _item_data = {**_item_data, "name": "A New Item"}
+    response = client.put(f"/items/{uuid.uuid4()}", json=_item_data, headers=headers)
     assert response.status_code == 400
 
 
-def test_no_item_delete(client: TestClient) -> None:
-    response = client.delete(
-        f"/items/{uuid.uuid4()}",
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+def test_no_item_delete(client: TestClient, headers: Dict) -> None:
+    response = client.delete(f"/items/{uuid.uuid4()}", headers=headers)
     assert response.status_code == 400
 
 
-def test_list_items(client: TestClient) -> None:
-    response = client.get(
-        "/items",
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+def test_list_items(client: TestClient, item_data: Dict, headers: Dict) -> None:
+    response = client.get("/current_user", headers=headers)
+    user_id = response.json().get("id")
+    item_data["user_id"] = user_id
+    response = client.post("/items", json=item_data, headers=headers)
+    assert response.status_code == 200
+    response = client.get("/items", headers=headers)
     assert response.status_code == 200
     body = response.json()
-    assert len(body) == 2
+    assert type(body) == list
+    assert len(body) > 0
 
 
-def test_update_item(client: TestClient) -> None:
-    response = client.post(
-        "/items",
-        json=mock_item_dict,
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+def test_update_item(client: TestClient, item_data: Dict, headers: Dict) -> None:
+    response = client.get("/current_user", headers=headers)
+    user_id = response.json().get("id")
+    item_data["user_id"] = user_id
+    response = client.post("/items", json=item_data, headers=headers)
     assert response.status_code == 200
+
     id = response.json().get("id")
     user_id = response.json().get("user_id")
-
-    response = client.put(
-        f"/items/{id}",
-        json=mock_item_updated_dict,
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+    _item_data = item_data.copy()
+    _item_data["name"] = "A New New Item"
+    response = client.put(f"/items/{id}", json=_item_data, headers=headers)
     assert response.status_code == 200
     body = response.json()
     assert body.get("id") == id
@@ -119,27 +88,12 @@ def test_update_item(client: TestClient) -> None:
     assert body.get("name") == "A New New Item"
 
 
-def test_delete_item(client: TestClient) -> None:
-    response = client.get(
-        "/items",
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+def test_delete_item(client: TestClient, item_data: Dict, headers: Dict) -> None:
+    response = client.get("/current_user", headers=headers)
+    user_id = response.json().get("id")
+    item_data["user_id"] = user_id
+    response = client.post("/items", json=item_data, headers=headers)
     assert response.status_code == 200
-    body = response.json()
-    assert len(body) == 3
-    id = body[0].get("id")
-
-    response = client.delete(
-        f"/items/{id}",
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
+    item_id = response.json().get("id")
+    response = client.delete(f"/items/{item_id}", headers=headers)
     assert response.status_code == 200
-
-    response = client.get(
-        "/items",
-        headers=mock_auth.mock_auth_header(mock_user_alice_dict, client),
-    )
-    assert response.status_code == 200
-    body = response.json()
-    assert len(body) == 2
-    assert id not in [el.get("id") for el in body]

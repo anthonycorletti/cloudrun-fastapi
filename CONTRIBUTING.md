@@ -99,7 +99,7 @@ alembic history -vvv
 
 To create your migrations on a cloudsql instance:
 
-First install and configure `cloud_sql_proxy`; https://cloud.google.com/sql/docs/mysql/connect-instance-auth-proxy#gcloud
+First install and configure `cloud_sql_proxy` by following [this guide](https://cloud.google.com/sql/docs/mysql/connect-instance-auth-proxy#gcloud).
 
 ```sh
 cloud_sql_proxy -instances=${PROJECT_ID}:${REGION}:${DB_INSTANCE_NAME}=tcp:5432 -dir=/tmp/cloudsql

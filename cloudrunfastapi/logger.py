@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import os
@@ -5,17 +6,23 @@ import socket
 from typing import Any
 
 
+class LogEncoder(json.JSONEncoder):
+    def default(self, obj: Any) -> Any:
+        if isinstance(obj, bytes):
+            return obj.decode("utf-8")
+        elif isinstance(obj, (set, frozenset)):
+            return tuple(obj)
+        elif isinstance(obj, (datetime.datetime, datetime.date, datetime.time)):
+            return obj.isoformat()
+        return super().default(obj)
+
+
 class StructuredMessage:
     def __init__(self, **kwargs: Any) -> None:
         self.kwargs = kwargs
 
     def __str__(self) -> str:
-        result = {}
-        result.update(self.kwargs)
-        return json.dumps(result)
-
-
-sm = StructuredMessage
+        return LogEncoder().encode(self.kwargs)
 
 
 class OnelineFormatter(logging.Formatter):
@@ -29,7 +36,7 @@ class OnelineFormatter(logging.Formatter):
             result = result.replace("\n", "")
         result_dict = record.__dict__
         result_dict["host"] = socket.gethostname()
-        return str(sm(**result_dict))
+        return str(StructuredMessage(**result_dict))
 
 
 class StructuredLogger:
